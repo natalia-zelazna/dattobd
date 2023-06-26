@@ -28,7 +28,7 @@ obsscratch_fc28:
 obsscratch_CentOS_9:
     stage: build
     variables:
-        OBS_TARGET_DISTRO: "CentOS_999999999"
+        OBS_TARGET_DISTRO: "CentOS_9"
     script:
         - obsctl scratchbuild -f ../${CI_PROJECT_NAME}.tar.gz -o $CI_PROJECT_NAMESPACE -n $CI_PROJECT_NAME -t $PARENT_VERSION -R $CI_COMMIT_SHA -B $CI_COMMIT_REF_NAME -s $OBS_PROJECT -p $OBS_PACKAGE -T git -d $OBS_TARGET_DISTRO -im
         - cp -a scratchbuild-*/home/abuild/rpmbuild/RPMS/*/*.rpm .
