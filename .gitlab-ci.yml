@@ -56,7 +56,56 @@ obsscratch_xenial:
         - branches
     tags:
         - docker
-
+        
+obsscratch_beaver:
+    stage: build
+    variables:
+        OBS_TARGET_DISTRO: "xUbuntu_18.04"
+    script:
+        - obsctl scratchbuild -f ../${CI_PROJECT_NAME}.tar.gz -o $CI_PROJECT_NAMESPACE -n $CI_PROJECT_NAME -t $PARENT_VERSION -R $CI_COMMIT_SHA -B $CI_COMMIT_REF_NAME -s $OBS_PROJECT -p $OBS_PACKAGE -T git -d $OBS_TARGET_DISTRO -im
+        - cp -a scratchbuild-*/home/abuild/debbuild/DEBS/*/*.deb .
+    artifacts:
+        when: on_success
+        paths:
+            - ${SOURCE_NAME}*.deb
+    only:
+        - branches
+    tags:
+        - docker
+        
+  obsscratch_focal:
+    stage: build
+    variables:
+        OBS_TARGET_DISTRO: "xUbuntu_20.04"
+    script:
+        - obsctl scratchbuild -f ../${CI_PROJECT_NAME}.tar.gz -o $CI_PROJECT_NAMESPACE -n $CI_PROJECT_NAME -t $PARENT_VERSION -R $CI_COMMIT_SHA -B $CI_COMMIT_REF_NAME -s $OBS_PROJECT -p $OBS_PACKAGE -T git -d $OBS_TARGET_DISTRO -im
+        - cp -a scratchbuild-*/home/abuild/debbuild/DEBS/*/*.deb .
+    artifacts:
+        when: on_success
+        paths:
+            - ${SOURCE_NAME}*.deb
+    only:
+        - branches
+    tags:
+        - docker      
+  
+  obsscratch_jelly:
+    stage: build
+    variables:
+        OBS_TARGET_DISTRO: "xUbuntu_22.04"
+    script:
+        - obsctl scratchbuild -f ../${CI_PROJECT_NAME}.tar.gz -o $CI_PROJECT_NAMESPACE -n $CI_PROJECT_NAME -t $PARENT_VERSION -R $CI_COMMIT_SHA -B $CI_COMMIT_REF_NAME -s $OBS_PROJECT -p $OBS_PACKAGE -T git -d $OBS_TARGET_DISTRO -im
+        - cp -a scratchbuild-*/home/abuild/debbuild/DEBS/*/*.deb .
+    artifacts:
+        when: on_success
+        paths:
+            - ${SOURCE_NAME}*.deb
+    only:
+        - branches
+    tags:
+        - docker      
+ 
+               
 obsrelease:
     stage: deploy
     script:
