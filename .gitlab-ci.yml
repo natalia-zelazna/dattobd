@@ -73,7 +73,7 @@ obsscratch_beaver:
     tags:
         - docker
         
- obsscratch_focal:
+obsscratch_focal:
     stage: build
     variables:
         OBS_TARGET_DISTRO: "xUbuntu_20.04"
@@ -89,7 +89,7 @@ obsscratch_beaver:
     tags:
         - docker      
   
-  obsscratch_jelly:
+obsscratch_jelly:
     stage: build
     variables:
         OBS_TARGET_DISTRO: "xUbuntu_22.04"
