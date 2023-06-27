@@ -9,21 +9,6 @@ before_script:
   - cd ..; tar -c -z --exclude-vcs -v -f ${CI_PROJECT_NAME}.tar.gz ${CI_PROJECT_NAME}; cd $CI_PROJECT_NAME
   - export PARENT_VERSION=$(rpmspec -q --srpm --qf '%{version}' dist/${CI_PROJECT_NAME}.spec)
 
-obsscratch_fc28:
-    stage: build
-    variables:
-        OBS_TARGET_DISTRO: "Fedora_28"
-    script:
-        - obsctl scratchbuild -f ../${CI_PROJECT_NAME}.tar.gz -o $CI_PROJECT_NAMESPACE -n $CI_PROJECT_NAME -t $PARENT_VERSION -R $CI_COMMIT_SHA -B $CI_COMMIT_REF_NAME -s $OBS_PROJECT -p $OBS_PACKAGE -T git -d $OBS_TARGET_DISTRO -im
-        - cp -a scratchbuild-*/home/abuild/rpmbuild/RPMS/*/*.rpm .
-    artifacts:
-        when: on_success
-        paths:
-            - ${SOURCE_NAME}*.rpm
-    only:
-        - branches
-    tags:
-        - docker
 
 obsscratch_CentOS_9:
     stage: build
@@ -41,7 +26,7 @@ obsscratch_CentOS_9:
     tags:
         - docker
 
-obsscratch_xenial:
+obsscratch_16_04:
     stage: build
     variables:
         OBS_TARGET_DISTRO: "xUbuntu_16.04"
@@ -57,7 +42,7 @@ obsscratch_xenial:
     tags:
         - docker
         
-obsscratch_beaver:
+obsscratch_18_04:
     stage: build
     variables:
         OBS_TARGET_DISTRO: "xUbuntu_18.04"
@@ -73,7 +58,7 @@ obsscratch_beaver:
     tags:
         - docker
         
-obsscratch_focal:
+obsscratch_20_04:
     stage: build
     variables:
         OBS_TARGET_DISTRO: "xUbuntu_20.04"
@@ -89,7 +74,7 @@ obsscratch_focal:
     tags:
         - docker      
   
-obsscratch_jelly:
+obsscratch_22_04:
     stage: build
     variables:
         OBS_TARGET_DISTRO: "xUbuntu_22.04"
