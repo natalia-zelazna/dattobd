@@ -4,7 +4,6 @@ variables:
   OBS_PROJECT: "home:natalia.zelazna"
   OBS_PACKAGE: "dattobd"
   OBS_TARGET_DISTRO: "null"
-  CI_COMMIT_TAG: "0.11.3"
   
 before_script:
   - cd ..; tar -c -z --exclude-vcs -v -f ${CI_PROJECT_NAME}.tar.gz ${CI_PROJECT_NAME}; cd $CI_PROJECT_NAME
@@ -81,7 +80,7 @@ obsrelease:
         - obsctl tarimport -f ../${CI_PROJECT_NAME}.tar.gz -o $CI_PROJECT_NAMESPACE -n $CI_PROJECT_NAME -t $CI_COMMIT_TAG -R $CI_COMMIT_SHA -B $CI_COMMIT_REF_NAME -s $OBS_PROJECT -p $OBS_PACKAGE -T git -i
         
     only:
-        -  - tags@natalia.zelazna/dattobd
+        - tags@natalia.zelazna/dattobd
     tags:
         - docker
         
