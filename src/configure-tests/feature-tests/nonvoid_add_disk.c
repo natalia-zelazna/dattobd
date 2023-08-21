@@ -9,6 +9,7 @@
 MODULE_LICENSE("GPL");
 
 static inline void dummy(void){
-	int ret = (int)submit_bio(NULL);
+    struct gendisk *gd = NULL;
+	int ret = (int)add_disk(gd);
 	printk(KERN_INFO "%d\n", ret);
 }

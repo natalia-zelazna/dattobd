@@ -6,6 +6,9 @@
 # Location to install kernel module sources
 %global _kmod_src_root %{_usrsrc}/%{name}-%{version}
 
+# Location for systemd shutdown script
+%global _systemd_shutdown /lib/systemd/system-shutdown
+
 # All sane distributions use dracut now, so here are dracut paths for it
 %if 0%{?rhel} > 0 && 0%{?rhel} < 7
 %global _dracut_modules_root %{_datadir}/dracut/modules.d
@@ -270,7 +273,6 @@ OrderWithRequires: kernel-syms
 Kernel module sources for %{name} for DKMS to
 automatically build and install for each kernel.
 
-
 %prep
 %if ! %{with devmode}
 %setup -q
@@ -278,12 +280,10 @@ automatically build and install for each kernel.
 %setup -q -n %{name}
 %endif
 
-
 %build
 export CFLAGS="%{optflags}"
 make application
 make utils
-
 
 %install
 # Install library
@@ -372,9 +372,12 @@ install -m 755 dist/initramfs/dracut/install %{buildroot}%{_dracut_modules_root}
 %endif
 %endif
 
+# Install systemd shutdown script
+mkdir -p %{buildroot}%{_systemd_shutdown}
+install -m 755 dist/shutdown/umount_rootfs.shutdown %{buildroot}%{_systemd_shutdown}/umount_rootfs.shutdown
+
 # Get rid of git artifacts
 find %{buildroot} -name "*.git*" -print0 | xargs -0 rm -rfv
-
 %preun -n %{dkmsname}
 
 %if "%{_vendor}" == "debbuild"
@@ -408,7 +411,6 @@ if [ "$1" -ge "1" ]; then
     fi
 fi
 
-
 %post utils
 %if 0%{?rhel} != 5
 # Generate initramfs
@@ -424,7 +426,6 @@ elif type "update-initramfs" &> /dev/null; then
 fi
 sleep 1 || :
 %endif
-
 
 %postun utils
 %if 0%{?rhel} != 5
@@ -453,11 +454,9 @@ fi
 %postun -n %{libname}
 /sbin/ldconfig
 
-
 %clean
 # EL5 and SLE 11 require this section
 rm -rf %{buildroot}
-
 
 %files utils
 %if 0%{?suse_version}
@@ -487,6 +486,10 @@ rm -rf %{buildroot}
 %endif
 %endif
 %endif
+
+# Install systemd shutdown script
+%{_systemd_shutdown}/umount_rootfs.shutdown
+
 %doc README.md doc/STRUCTURE.md
 %if "%{_vendor}" == "redhat"
 %{!?_licensedir:%global license %doc}
@@ -568,7 +571,6 @@ rm -rf %{buildroot}
 %doc COPYING* LICENSING.md
 %endif
 %endif
-
 
 %changelog
 * Tue May 19 2023 Lukasz Fulek <lukasz.fulek@datto.com> - 0.11.3
