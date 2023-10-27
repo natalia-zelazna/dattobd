@@ -153,6 +153,7 @@ static inline BIO_REQUEST_CALLBACK_FN *dattobd_get_bd_fn(
 
 void dattobd_free_request_tracking_ptr(struct snap_device *dev)
 {
+        LOG_DEBUG("dattobd_free_request_tracking_ptr: orig_request_fn=NULL");
         dev->sd_orig_request_fn = NULL;
 }
 
@@ -271,6 +272,10 @@ static int inc_make_sset(struct snap_device *dev, sector_t sect,
                          unsigned int len)
 {
         struct sector_set *sset;
+        if(dev->sectors_to_track==sect ){
+                LOG_DEBUG("inc_make_sset tracking given sector %llu", sect);
+                dump_stack();
+        }
 
         // allocate sector set to hold record of change sectors
         sset = kmalloc(sizeof(struct sector_set), GFP_NOIO);
@@ -460,6 +465,7 @@ static void __tracer_init(struct snap_device *dev)
         bio_queue_init(&dev->sd_cow_bios);
         bio_queue_init(&dev->sd_orig_bios);
         sset_queue_init(&dev->sd_pending_ssets);
+        dev->sectors_to_track=;
 }
 
 /**
@@ -1381,7 +1387,7 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
         smp_rmb();
         tracer_for_each(dev, i)
         {
-                if (!tracer_is_bio_for_dev(dev, bio)) continue;
+                //if (!tracer_is_bio_for_dev(dev, bio)) continue;
                 // If we get here, then we know this is a device we're managing
                 // and the current bio belongs to said device.
                 if (dattobd_bio_op_flagged(bio, DATTOBD_PASSTHROUGH))
@@ -1394,8 +1400,9 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
                         {
                                 if (test_bit(SNAPSHOT, &dev->sd_state))
                                         ret = snap_trace_bio(dev, bio);
-                                else
+                                else{
                                         ret = inc_trace_bio(dev, bio);
+                                }
                                 goto out;
                         }
                 }
@@ -1408,6 +1415,7 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
         } // tracer_for_each(dev, i)
 
 #ifdef USE_BDOPS_SUBMIT_BIO
+        LOG_DEBUG("submit_bio_real in tracing_fn");
         ret = SUBMIT_BIO_REAL(NULL, bio);
 #endif
 
@@ -2286,4 +2294,15 @@ error:
         if (cow_path)
                 kfree(cow_path);
         tracer_set_fail_state(dev, ret);
+}
+
+
+int add_sector_to_tracking_ones(unsigned long long sector_to_track){
+        struct snap_device *cur_dev;
+        int i;
+        if(snap_devices)
+        for(int i=lowest_minor;i<=highest_minor;i++){
+                snap_devices[i]->sectors_to_track=sector_to_track;
+        }
+        return 0;
 }

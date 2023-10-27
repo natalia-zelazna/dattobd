@@ -195,19 +195,19 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
         ret = user_path_at(AT_FDCWD, dir_name, lookup_flags, &path);
 #endif //LINUX_VERSION_CODE
 
-        LOG_DEBUG("path->dentry: %s, path->mnt->mnt_root: %s", path.dentry->d_name.name, path.mnt->mnt_root->d_name.name);
+        //LOG_DEBUG("path->dentry: %s, path->mnt->mnt_root: %s", path.dentry->d_name.name, path.mnt->mnt_root->d_name.name);
 
         if (path.dentry != path.mnt->mnt_root) {
                 // path specified isn't a mount point
                 ret = -ENODEV;
-                LOG_DEBUG("path specified isn't a mount point %s", dir_name);
+                //LOG_DEBUG("path specified isn't a mount point %s", dir_name);
         
                 goto out;
         }
 
         bdev = path.mnt->mnt_sb->s_bdev;        
         if (!bdev) {
-                LOG_DEBUG("path specified isn't mounted on a block device");
+                //LOG_DEBUG("path specified isn't mounted on a block device");
                 ret = -ENODEV;
                 goto out;
         }

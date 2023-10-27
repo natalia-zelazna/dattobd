@@ -39,6 +39,7 @@ int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
 //#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,7,0)
 MRF_RETURN_TYPE dattobd_null_mrf(struct request_queue *q, struct bio *bio)
 {
+        LOG_DEBUG("dattobd_null_mrf");
         percpu_ref_get(&q->q_usage_counter);
         // create a make_request_fn for the supplied request_queue.
         return blk_mq_make_request(q, bio);
@@ -60,6 +61,7 @@ void dattobd_set_bd_mrf(struct block_device *bdev, make_request_fn *mrf)
 #ifdef USE_BDOPS_SUBMIT_BIO
 MRF_RETURN_TYPE dattobd_null_mrf(struct bio *bio)
 {
+    LOG_DEBUG("dattobd_null_mrf");
     // Before we can submit our bio to the original device... 
     // If there's any bio in the bio_list that ISN'T our bio, requeue it and 
     // return early, because that's what would happen anyway if we submit 
@@ -74,6 +76,7 @@ MRF_RETURN_TYPE dattobd_null_mrf(struct bio *bio)
         {
             if (bio_in_list != bio)
             {
+                LOG_DEBUG("bio_in_list!= bio ending_sector: %llu",bio_sector(bio));
                 bio_list_add(&current->bio_list[0], bio);
                 MRF_RETURN(0); // return BLK_QC_T_NONE;
             }
