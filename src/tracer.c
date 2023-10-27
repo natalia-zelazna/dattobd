@@ -272,10 +272,6 @@ static int inc_make_sset(struct snap_device *dev, sector_t sect,
                          unsigned int len)
 {
         struct sector_set *sset;
-        if(dev->sectors_to_track==sect ){
-                LOG_DEBUG("inc_make_sset tracking given sector %llu", sect);
-                dump_stack();
-        }
 
         // allocate sector set to hold record of change sectors
         sset = kmalloc(sizeof(struct sector_set), GFP_NOIO);
@@ -465,7 +461,6 @@ static void __tracer_init(struct snap_device *dev)
         bio_queue_init(&dev->sd_cow_bios);
         bio_queue_init(&dev->sd_orig_bios);
         sset_queue_init(&dev->sd_pending_ssets);
-        dev->sectors_to_track=;
 }
 
 /**
@@ -2294,15 +2289,4 @@ error:
         if (cow_path)
                 kfree(cow_path);
         tracer_set_fail_state(dev, ret);
-}
-
-
-int add_sector_to_tracking_ones(unsigned long long sector_to_track){
-        struct snap_device *cur_dev;
-        int i;
-        if(snap_devices)
-        for(int i=lowest_minor;i<=highest_minor;i++){
-                snap_devices[i]->sectors_to_track=sector_to_track;
-        }
-        return 0;
 }
