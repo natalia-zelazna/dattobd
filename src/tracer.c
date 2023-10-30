@@ -1406,9 +1406,10 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
                 {
                         if (tracer_should_trace_bio(dev, bio))
                         {
-                                if (test_bit(SNAPSHOT, &dev->sd_state))
+                                if (test_bit(SNAPSHOT, &dev->sd_state)){
                                         LOG_DEBUG("snap_trace_bio");
                                         ret = snap_trace_bio(dev, bio);
+                                }
                                 else{
                                         LOG_DEBUG("inc_trace_bio");
                                         ret = inc_trace_bio(dev, bio);
