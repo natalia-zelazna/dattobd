@@ -360,7 +360,7 @@ out:
         }
 
         // call the original mrf
-        LOG_DEBUG("calling SUBMIT_BIO_REAL from inc_trace_bio");
+        LOG_DEBUG("calling SUBMIT_BIO_REAL from inc_trace_bio %ld length %d", bio_sector(bio), bio_size(bio));
         ret = SUBMIT_BIO_REAL(dev, bio);
 
         return ret;
@@ -1391,7 +1391,10 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
         smp_rmb();
         tracer_for_each(dev, i)
         {
-                //if (!tracer_is_bio_for_dev(dev, bio)) continue;
+                if (!tracer_is_bio_for_dev(dev, bio)){
+                        LOG_DEBUG("tracing_fn bio is not for this tracer");
+                        continue;
+                }
                 // If we get here, then we know this is a device we're managing
                 // and the current bio belongs to said device.
                 if (dattobd_bio_op_flagged(bio, DATTOBD_PASSTHROUGH))
@@ -1404,6 +1407,7 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
                         if (tracer_should_trace_bio(dev, bio))
                         {
                                 if (test_bit(SNAPSHOT, &dev->sd_state))
+                                        LOG_DEBUG("snap_trace_bio");
                                         ret = snap_trace_bio(dev, bio);
                                 else{
                                         LOG_DEBUG("inc_trace_bio");
@@ -1436,6 +1440,7 @@ static void notrace ftrace_handler_submit_bio_noacct(unsigned long ip,
         struct ftrace_ops *fops,
         struct ftrace_regs *fregs)
 {
+        LOG_DEBUG("ftrace_handler_submit_bio_noacct a");
         ftrace_instruction_pointer_set(fregs, (unsigned long)tracing_fn);
 }
 #else
@@ -1444,6 +1449,7 @@ static void notrace ftrace_handler_submit_bio_noacct(unsigned long ip,
         struct ftrace_ops *fops,
         struct pt_regs *fregs)
 {
+        LOG_DEBUG("ftrace_handler_submit_bio_noacct b");
         fregs->ip = (unsigned long)tracing_fn;
 }
 #endif
