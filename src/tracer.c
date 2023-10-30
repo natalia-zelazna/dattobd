@@ -272,6 +272,7 @@ static int inc_make_sset(struct snap_device *dev, sector_t sect,
                          unsigned int len)
 {
         struct sector_set *sset;
+        LOG_DEBUG("inc_make_sset %ld with length %d",sect, len);
 
         // allocate sector set to hold record of change sectors
         sset = kmalloc(sizeof(struct sector_set), GFP_NOIO);
@@ -320,6 +321,8 @@ static int inc_trace_bio(struct snap_device *dev, struct bio *bio)
         }
 #endif
 
+        int sectorsProcessed=0;
+        int sectorsPassedToIncMakeSSET=0;
         bio_for_each_segment (bvec, bio, iter) {
                 if (page_get_inode(bio_iter_page(bio, iter)) !=
                     dev->sd_cow_inode) {
@@ -329,6 +332,7 @@ static int inc_trace_bio(struct snap_device *dev, struct bio *bio)
                         }
                 } else {
                         if (is_initialized && end_sect - start_sect > 0) {
+                                sectorsPassedToIncMakeSSET++;
                                 ret = inc_make_sset(dev, start_sect,
                                                     end_sect - start_sect);
                                 if (ret)
@@ -337,9 +341,12 @@ static int inc_trace_bio(struct snap_device *dev, struct bio *bio)
                         is_initialized = 0;
                 }
                 end_sect += (bio_iter_len(bio, iter) >> 9);
+                sectorsProcessed++;
         }
+        LOG_DEBUG("Inc trace bio success %d out of %d",sectorsPassedToIncMakeSSET, sectorsProcessed);
 
         if (is_initialized && end_sect - start_sect > 0) {
+                LOG_DEBUG("inc_make_sset last occurance");
                 ret = inc_make_sset(dev, start_sect, end_sect - start_sect);
                 if (ret)
                         goto out;
@@ -353,6 +360,7 @@ out:
         }
 
         // call the original mrf
+        LOG_DEBUG("calling SUBMIT_BIO_REAL from inc_trace_bio");
         ret = SUBMIT_BIO_REAL(dev, bio);
 
         return ret;
@@ -1379,6 +1387,7 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
         struct snap_device *dev = NULL;
         MAYBE_UNUSED(ret);
 
+        LOG_DEBUG("tracing fn, bio beginning sector %ld, bio size %ld",bio_sector(bio), bio_size(bio));
         smp_rmb();
         tracer_for_each(dev, i)
         {
@@ -1387,6 +1396,7 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
                 // and the current bio belongs to said device.
                 if (dattobd_bio_op_flagged(bio, DATTOBD_PASSTHROUGH))
                 {
+                        LOG_DEBUG("this one will be passed to SUBMIT_BIO_REAL- general");
                         dattobd_bio_op_clear_flag(bio, DATTOBD_PASSTHROUGH);
                 }
                 else
@@ -1396,6 +1406,7 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
                                 if (test_bit(SNAPSHOT, &dev->sd_state))
                                         ret = snap_trace_bio(dev, bio);
                                 else{
+                                        LOG_DEBUG("inc_trace_bio");
                                         ret = inc_trace_bio(dev, bio);
                                 }
                                 goto out;
@@ -1410,7 +1421,7 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
         } // tracer_for_each(dev, i)
 
 #ifdef USE_BDOPS_SUBMIT_BIO
-        LOG_DEBUG("submit_bio_real in tracing_fn");
+        LOG_DEBUG("submit_bio_real in tracing_fn-specific for USE_BDOPS");
         ret = SUBMIT_BIO_REAL(NULL, bio);
 #endif
 

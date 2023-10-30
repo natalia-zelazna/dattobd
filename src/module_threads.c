@@ -40,7 +40,7 @@ int inc_sset_thread(void *data)
 
         // give this thread the highest priority we are allowed
         set_user_nice(current, MIN_NICE);
-
+        LOG_DEBUG("incremental thread starts");
         while (!kthread_should_stop() || !sset_queue_empty(sq)) {
                 // wait for a sset to process or a kthread_stop call
                 wait_event_interruptible(sq->event,
@@ -65,6 +65,8 @@ int inc_sset_thread(void *data)
                 // if there has been a problem don't process any more, just free
                 // the ones we have
                 if (is_failed) {
+                        LOG_DEBUG("inc_sset_thread: failed");
+                        LOG_DEBUG("sector set->setcor_t value is %ld", sset->sect);
                         kfree(sset);
                         continue;
                 }
@@ -80,6 +82,7 @@ int inc_sset_thread(void *data)
                 // free the sector set
                 kfree(sset);
         }
+        LOG_DEBUG("incremental thread stops");
 
         return 0;
 }
