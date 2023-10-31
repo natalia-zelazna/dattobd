@@ -341,6 +341,7 @@ static int inc_trace_bio(struct snap_device *dev, struct bio *bio)
                         is_initialized = 0;
                 }
                 end_sect += (bio_iter_len(bio, iter) >> 9);
+                LOG_DEBUG("sector processed in inc_trace_bio %ld",start_sector);
                 sectorsProcessed++;
         }
         LOG_DEBUG("Inc trace bio success %d out of %d",sectorsPassedToIncMakeSSET, sectorsProcessed);
@@ -1409,7 +1410,7 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
                         {
                                 LOG_DEBUG("tracing fn, bio beginning sector %ld, bio size %ld",bio_sector(bio), bio_size(bio));
                                 if (test_bit(SNAPSHOT, &dev->sd_state)){
-                                        LOG_DEBUG("snap_trace_bio");
+                                        //LOG_DEBUG("snap_trace_bio");
                                         ret = snap_trace_bio(dev, bio);
                                 }
                                 else{
@@ -1429,9 +1430,9 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
 
 #ifdef USE_BDOPS_SUBMIT_BIO
         if(dattobd_bio_get_queue(bio)!=NULL){
-                LOG_DEBUG("tracing fn, bio beginning sector %ld, bio size %ld",bio_sector(bio), bio_size(bio));
-                LOG_DEBUG("submit_bio_real in tracing_fn-specific for USE_BDOPS- bio request_queue!= NULL");
-                ret = SUBMIT_BIO_REAL(NULL, bio);
+                //LOG_DEBUG("tracing fn, bio beginning sector %ld, bio size %ld",bio_sector(bio), bio_size(bio));
+                //LOG_DEBUG("submit_bio_real in tracing_fn-specific for USE_BDOPS- bio request_queue!= NULL");
+                //ret = SUBMIT_BIO_REAL(NULL, bio);
         }
 #endif
 
