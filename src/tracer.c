@@ -1429,10 +1429,11 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
         } // tracer_for_each(dev, i)
 
 #ifdef USE_BDOPS_SUBMIT_BIO
-        if(dattobd_bio_get_queue(bio)!=NULL){
-                //LOG_DEBUG("tracing fn, bio beginning sector %ld, bio size %ld",bio_sector(bio), bio_size(bio));
-                //LOG_DEBUG("submit_bio_real in tracing_fn-specific for USE_BDOPS- bio request_queue!= NULL");
-                //ret = SUBMIT_BIO_REAL(NULL, bio);
+        if(dattobd_bio_get_queue(bio)!=NULL && test_bit(SNAPSHOT, &dev->sd_state)){
+                LOG_DEBUG("tracing fn, bio beginning sector %ld, bio size %ld",bio_sector(bio), bio_size(bio));
+                LOG_DEBUG("submit_bio_real in tracing_fn-specific for USE_BDOPS- bio request_queue!= NULL");
+                //bez tego OS sie wywala-> zawiesza sie przy sudo -i
+                ret = SUBMIT_BIO_REAL(NULL, bio);
         }
 #endif
 
