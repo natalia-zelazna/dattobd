@@ -1445,8 +1445,8 @@ static void notrace ftrace_handler_submit_bio_noacct(unsigned long ip,
 {
         struct snap_device *dev = (struct snap_device *)fregs->regs[0];
         if(dev==NULL){
-                struct bio *bio = (struct bio *)fregs->regs[0];
-                dattobd_submit_bio(bio);
+                struct bio *bio = (struct bio *)fregs->regs[1];
+                ftrace_instruction_pointer_set(fregs, (unsigned long)DATTOBD_MINE_SUBMIT);
         }else{
         ftrace_instruction_pointer_set(fregs, (unsigned long)tracing_fn);
         }

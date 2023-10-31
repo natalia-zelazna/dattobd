@@ -123,6 +123,7 @@ typedef enum req_op req_op_t;
 
 #define bio_is_discard(bio) ((bio)->bi_rw & REQ_DISCARD)
 #define dattobd_submit_bio(bio) submit_bio(0, bio)
+#define DATTOBD_MINE_SUBMIT(dev, bio) submit_bio(0,bio)
 #define dattobd_submit_bio_wait(bio) submit_bio_wait(0, bio)
 
 int dattobd_bio_op_flagged(struct bio *bio, unsigned int flag);
@@ -151,6 +152,7 @@ void dattobd_bio_op_clear_flag(struct bio *bio, unsigned int flag);
 #endif
 
 #define dattobd_submit_bio(bio) submit_bio(bio)
+#define DATTOBD_MINE_SUBMIT(dev, bio) submit_bio(bio)
 #define dattobd_submit_bio_wait(bio) submit_bio_wait(bio)
 
 #endif
