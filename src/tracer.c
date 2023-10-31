@@ -341,7 +341,7 @@ static int inc_trace_bio(struct snap_device *dev, struct bio *bio)
                         is_initialized = 0;
                 }
                 end_sect += (bio_iter_len(bio, iter) >> 9);
-                LOG_DEBUG("sector processed in inc_trace_bio %ld",start_sector);
+                LOG_DEBUG("sector processed in inc_trace_bio %ld",start_sect);
                 sectorsProcessed++;
         }
         LOG_DEBUG("Inc trace bio success %d out of %d",sectorsPassedToIncMakeSSET, sectorsProcessed);
