@@ -1410,7 +1410,6 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
                         {
                                 LOG_DEBUG("tracing fn, bio beginning sector %ld, bio size %ld",bio_sector(bio), bio_size(bio));
                                 if (test_bit(SNAPSHOT, &dev->sd_state)){
-                                        //LOG_DEBUG("snap_trace_bio");
                                         ret = snap_trace_bio(dev, bio);
                                 }
                                 else{
@@ -1427,14 +1426,10 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
                 goto out;
                 
         } // tracer_for_each(dev, i)
-
 #ifdef USE_BDOPS_SUBMIT_BIO
-        if(dattobd_bio_get_queue(bio)!=NULL && test_bit(SNAPSHOT, &dev->sd_state)){
-                LOG_DEBUG("tracing fn, bio beginning sector %ld, bio size %ld",bio_sector(bio), bio_size(bio));
-                LOG_DEBUG("submit_bio_real in tracing_fn-specific for USE_BDOPS- bio request_queue!= NULL");
-                //bez tego OS sie wywala-> zawiesza sie przy sudo -i
+                //this is important as hell cause without this we won't save any stuffs to the OS
+                //what I would eventually would like to achieve is to call it without calling ftrace 
                 ret = SUBMIT_BIO_REAL(NULL, bio);
-        }
 #endif
 
 out:
@@ -1448,7 +1443,13 @@ static void notrace ftrace_handler_submit_bio_noacct(unsigned long ip,
         struct ftrace_ops *fops,
         struct ftrace_regs *fregs)
 {
+        struct snap_device *dev = (struct snap_Device *)fregs->regs[0];
+        if(dev==NULL){
+                struct bio *bio = (struct bio *)fregs->regs[0];
+                dattobd_submit_bio(bio);
+        }else{
         ftrace_instruction_pointer_set(fregs, (unsigned long)tracing_fn);
+        }
 }
 #else
 static void notrace ftrace_handler_submit_bio_noacct(unsigned long ip,
