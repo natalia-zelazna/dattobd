@@ -1387,7 +1387,6 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
         struct snap_device *dev = NULL;
         MAYBE_UNUSED(ret);
 
-        LOG_DEBUG("tracing fn, bio beginning sector %ld, bio size %ld",bio_sector(bio), bio_size(bio));
         smp_rmb();
         tracer_for_each(dev, i)
         {
@@ -1400,6 +1399,7 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
                 // and the current bio belongs to said device.
                 if (dattobd_bio_op_flagged(bio, DATTOBD_PASSTHROUGH))
                 {
+                        LOG_DEBUG("tracing fn, bio beginning sector %ld, bio size %ld",bio_sector(bio), bio_size(bio));
                         LOG_DEBUG("this one will be passed to SUBMIT_BIO_REAL- general");
                         dattobd_bio_op_clear_flag(bio, DATTOBD_PASSTHROUGH);
                 }
@@ -1407,6 +1407,7 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
                 {
                         if (tracer_should_trace_bio(dev, bio))
                         {
+                                LOG_DEBUG("tracing fn, bio beginning sector %ld, bio size %ld",bio_sector(bio), bio_size(bio));
                                 if (test_bit(SNAPSHOT, &dev->sd_state)){
                                         LOG_DEBUG("snap_trace_bio");
                                         ret = snap_trace_bio(dev, bio);
@@ -1427,8 +1428,11 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
         } // tracer_for_each(dev, i)
 
 #ifdef USE_BDOPS_SUBMIT_BIO
-        //LOG_DEBUG("submit_bio_real in tracing_fn-specific for USE_BDOPS");
-        ret = SUBMIT_BIO_REAL(NULL, bio);
+        if(dattobd_bio_get_queue(bio)!=NULL){
+                LOG_DEBUG("tracing fn, bio beginning sector %ld, bio size %ld",bio_sector(bio), bio_size(bio));
+                LOG_DEBUG("submit_bio_real in tracing_fn-specific for USE_BDOPS- bio request_queue!= NULL");
+                ret = SUBMIT_BIO_REAL(NULL, bio);
+        }
 #endif
 
 out:
