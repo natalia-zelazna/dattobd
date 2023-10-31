@@ -326,6 +326,7 @@ static int inc_trace_bio(struct snap_device *dev, struct bio *bio)
         bio_for_each_segment (bvec, bio, iter) {
                 if (page_get_inode(bio_iter_page(bio, iter)) !=
                     dev->sd_cow_inode) {
+                        LOG_DEBUG("page_get_inode != dev->sd_cow_inode");
                         if (!is_initialized) {
                                 is_initialized = 1;
                                 start_sect = end_sect;
