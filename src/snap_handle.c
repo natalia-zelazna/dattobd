@@ -306,6 +306,7 @@ int inc_handle_sset(const struct snap_device *dev, struct sector_set *sset)
         sector_t end_block = NUM_SEGMENTS(sset->sect + sset->len,
                                           COW_BLOCK_LOG_SIZE - SECTOR_SHIFT);
 
+        LOG_DEBUG("inc_handle_sset first sector: %ld last %ld", start_block, end_block);
         for (; start_block < end_block; start_block++) {
                 ret = cow_write_filler_mapping(dev->sd_cow, start_block);
                 if (ret)
