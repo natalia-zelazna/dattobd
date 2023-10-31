@@ -1429,7 +1429,8 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
 #ifdef USE_BDOPS_SUBMIT_BIO
                 //this is important as hell cause without this we won't save any stuffs to the OS
                 //what I would eventually would like to achieve is to call it without calling ftrace 
-                ret = SUBMIT_BIO_REAL(NULL, bio);
+                dattobd_submit_bio(bio);
+                //ret = SUBMIT_BIO_REAL(NULL, bio);
 #endif
 
 out:
@@ -1443,13 +1444,7 @@ static void notrace ftrace_handler_submit_bio_noacct(unsigned long ip,
         struct ftrace_ops *fops,
         struct ftrace_regs *fregs)
 {
-        struct snap_device *dev = (struct snap_device *)fregs->regs[0];
-        if(dev==NULL){
-                struct bio *bio = (struct bio *)fregs->regs[1];
-                ftrace_instruction_pointer_set(fregs, (unsigned long)DATTOBD_MINE_SUBMIT);
-        }else{
         ftrace_instruction_pointer_set(fregs, (unsigned long)tracing_fn);
-        }
 }
 #else
 static void notrace ftrace_handler_submit_bio_noacct(unsigned long ip,
