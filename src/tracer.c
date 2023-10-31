@@ -1392,7 +1392,8 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
         tracer_for_each(dev, i)
         {
                 if (!tracer_is_bio_for_dev(dev, bio)){
-                        LOG_DEBUG("tracing_fn bio is not for this tracer");
+                        //w incrementalu duzo wchodzi tutaj (u mnie przypadek z 1 devicem)->wychodza z petli i sa submitowane dalej
+                        //LOG_DEBUG("tracing_fn bio is not for this tracer");
                         continue;
                 }
                 // If we get here, then we know this is a device we're managing
@@ -1426,7 +1427,7 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
         } // tracer_for_each(dev, i)
 
 #ifdef USE_BDOPS_SUBMIT_BIO
-        LOG_DEBUG("submit_bio_real in tracing_fn-specific for USE_BDOPS");
+        //LOG_DEBUG("submit_bio_real in tracing_fn-specific for USE_BDOPS");
         ret = SUBMIT_BIO_REAL(NULL, bio);
 #endif
 
@@ -1441,7 +1442,6 @@ static void notrace ftrace_handler_submit_bio_noacct(unsigned long ip,
         struct ftrace_ops *fops,
         struct ftrace_regs *fregs)
 {
-        LOG_DEBUG("ftrace_handler_submit_bio_noacct a");
         ftrace_instruction_pointer_set(fregs, (unsigned long)tracing_fn);
 }
 #else

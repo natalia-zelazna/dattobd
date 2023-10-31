@@ -29,14 +29,28 @@ bool tracer_is_bio_for_dev(struct snap_device *dev, struct bio *bio)
 {
         int active = 0;
         if (!dev) {
+                LOG_DEBUG("dev is null");
                 return false;
         }
 
         smp_mb();
         active = atomic_read(&dev->sd_active);
+        if(active==false){
+                LOG_DEBUG("dev is not active");
+        }
 
-        return !test_bit(UNVERIFIED, &dev->sd_state)
-                && tracer_queue_matches_bio(dev, bio)
+        int does_tracer_match_bio=tracer_queue_matches_bio(dev, bio);
+        if(!does_tracer_match_bio){
+                LOG_DEBUG("tracer does not match bio");
+        }
+
+        int is_bit_verified=test_bit(UNVERIFIED, &dev->sd_state);
+        if(test_bit(UNVERIFIED, &dev->sd_state)){
+                LOG_DEBUG("bit is unverified");
+        }
+
+        return !is_bit_verified
+                && does_tracer_match_bio
                 && active;
 }
 
