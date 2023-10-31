@@ -1428,9 +1428,7 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
         } // tracer_for_each(dev, i)
 #ifdef USE_BDOPS_SUBMIT_BIO
                 //this is important as hell cause without this we won't save any stuffs to the OS
-                //what I would eventually would like to achieve is to call it without calling ftrace 
-                dattobd_submit_bio(bio);
-                //ret = SUBMIT_BIO_REAL(NULL, bio);
+                ret = SUBMIT_BIO_REAL(NULL, bio);
 #endif
 
 out:
