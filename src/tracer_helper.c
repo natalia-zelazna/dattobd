@@ -9,6 +9,7 @@
 #include "bio_helper.h"
 #include "includes.h"
 #include "snap_device.h"
+#include "logging.h"
 
 
 int tracer_read_fail_state(const struct snap_device *dev)
