@@ -1443,7 +1443,7 @@ static void notrace ftrace_handler_submit_bio_noacct(unsigned long ip,
         struct ftrace_ops *fops,
         struct ftrace_regs *fregs)
 {
-        struct snap_device *dev = (struct snap_Device *)fregs->regs[0];
+        struct snap_device *dev = (struct snap_device *)fregs->regs[0];
         if(dev==NULL){
                 struct bio *bio = (struct bio *)fregs->regs[0];
                 dattobd_submit_bio(bio);
