@@ -326,8 +326,10 @@ static int inc_trace_bio(struct snap_device *dev, struct bio *bio)
         bio_for_each_segment (bvec, bio, iter) {
                 if (page_get_inode(bio_iter_page(bio, iter)) !=
                     dev->sd_cow_inode) {
+                        //wchodza tutaj
                         LOG_DEBUG("page_get_inode != dev->sd_cow_inode");
                         if (!is_initialized) {
+                                //wchodzi tutaj
                                 is_initialized = 1;
                                 start_sect = end_sect;
                         }
@@ -348,6 +350,7 @@ static int inc_trace_bio(struct snap_device *dev, struct bio *bio)
         LOG_DEBUG("Inc trace bio success %d out of %d",sectorsPassedToIncMakeSSET, sectorsProcessed);
 
         if (is_initialized && end_sect - start_sect > 0) {
+                //wchodzi tutaj
                 LOG_DEBUG("inc_make_sset last occurance");
                 ret = inc_make_sset(dev, start_sect, end_sect - start_sect);
                 if (ret)
@@ -1388,6 +1391,9 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
         int i, ret = 0;
         struct snap_device *dev = NULL;
         MAYBE_UNUSED(ret);
+        static long long number_of_calls=0;
+        number_of_calls++;
+        LOG_DEBUG("tracing_fn call no %lld", number_of_calls);
 
         smp_rmb();
         tracer_for_each(dev, i)
@@ -1401,20 +1407,16 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
                 // and the current bio belongs to said device.
                 if (dattobd_bio_op_flagged(bio, DATTOBD_PASSTHROUGH))
                 {
-                        LOG_DEBUG("tracing fn, bio beginning sector %ld, bio size %ld",bio_sector(bio), bio_size(bio));
-                        LOG_DEBUG("this one will be passed to SUBMIT_BIO_REAL- general");
                         dattobd_bio_op_clear_flag(bio, DATTOBD_PASSTHROUGH);
                 }
                 else
                 {
                         if (tracer_should_trace_bio(dev, bio))
                         {
-                                LOG_DEBUG("tracing fn, bio beginning sector %ld, bio size %ld",bio_sector(bio), bio_size(bio));
                                 if (test_bit(SNAPSHOT, &dev->sd_state)){
                                         ret = snap_trace_bio(dev, bio);
                                 }
                                 else{
-                                        LOG_DEBUG("inc_trace_bio");
                                         ret = inc_trace_bio(dev, bio);
                                 }
                                 goto out;
