@@ -22,7 +22,7 @@
  * worry, the stack pointer manipulation is right after the call.
  */
 blk_qc_t (*dattobd_submit_bio_noacct_passthrough)(struct bio *) =
-	(blk_qc_t(*)(struct bio *))((unsigned long)(submit_bio_noacct) +
+	(blk_qc_t(*)(struct bio *))((unsigned long)(submit_bio) +
         FENTRY_CALL_INSTR_BYTES);
 
 int dattobd_submit_bio_real(

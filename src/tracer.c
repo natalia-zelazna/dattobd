@@ -1195,9 +1195,9 @@ static void notrace ftrace_handler_submit_bio_noacct(unsigned long ip,
         struct pt_regs *fregs);
 #endif
 
-unsigned char* funcname_submit_bio_noacct = "submit_bio_noacct";
+unsigned char* funcname_submit_bio_noacct = "submit_bio";
 struct ftrace_ops ops_submit_bio_noacct = {
-        .func = ftrace_handler_submit_bio_noacct,
+        .func = ftrace_handler_submit_bio,
         .flags = FTRACE_OPS_FL_SAVE_REGS | FTRACE_OPS_FL_PERMANENT | FTRACE_OPS_FL_IPMODIFY};
 #endif
 
@@ -1453,7 +1453,6 @@ static void notrace ftrace_handler_submit_bio_noacct(unsigned long ip,
         struct ftrace_ops *fops,
         struct pt_regs *fregs)
 {
-        LOG_DEBUG("ftrace_handler_submit_bio_noacct b");
         fregs->ip = (unsigned long)tracing_fn;
 }
 #endif
