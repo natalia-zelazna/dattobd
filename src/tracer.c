@@ -1389,6 +1389,7 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
 #endif
 {
         int i, ret = 0;
+        int pass_touch = 0;
         struct snap_device *dev = NULL;
         MAYBE_UNUSED(ret);
         static long long number_of_calls=0;
@@ -1407,7 +1408,9 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
                 // and the current bio belongs to said device.
                 if (dattobd_bio_op_flagged(bio, DATTOBD_PASSTHROUGH))
                 {
+                        pass_touch++;
                         dattobd_bio_op_clear_flag(bio, DATTOBD_PASSTHROUGH);
+                        LOG_DEBUG("ATTOBD_PASSTHROUGH hit %d", pass_touch);
                 }
                 else
                 {
@@ -1425,7 +1428,7 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
 
                 // Now we can submit the bio.
                 ret = SUBMIT_BIO_REAL(dev, bio);
-
+                LOG_DEBUG("DATTOBD_PASSTHROUGH na koniec hit %d", pass_touch);  
                 goto out;
                 
         } // tracer_for_each(dev, i)
