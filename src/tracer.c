@@ -1398,41 +1398,41 @@ static MRF_RETURN_TYPE tracing_fn(struct request_queue *q, struct bio *bio)
 
         smp_rmb();
         
-        // tracer_for_each(dev, i)
-        // {
-        //         if (!tracer_is_bio_for_dev(dev, bio)){
-        //                 //w incrementalu duzo wchodzi tutaj (u mnie przypadek z 1 devicem)->wychodza z petli i sa submitowane dalej
-        //                 //LOG_DEBUG("tracing_fn bio is not for this tracer");
-        //                 continue;
-        //         }
-        //         // If we get here, then we know this is a device we're managing
-        //         // and the current bio belongs to said device.
-        //         if (dattobd_bio_op_flagged(bio, DATTOBD_PASSTHROUGH))
-        //         {
-        //                 pass_touch++;
-        //                 dattobd_bio_op_clear_flag(bio, DATTOBD_PASSTHROUGH);
-        //                 LOG_DEBUG("ATTOBD_PASSTHROUGH hit %d", pass_touch);
-        //         }
-        //         else
-        //         {
-        //                 if (tracer_should_trace_bio(dev, bio))
-        //                 {
-        //                         if (test_bit(SNAPSHOT, &dev->sd_state)){
-        //                                 ret = snap_trace_bio(dev, bio);
-        //                         }
-        //                         else{
-        //                                 ret = inc_trace_bio(dev, bio);
-        //                         }
-        //                         goto out;
-        //                 }
-        //         }
+        tracer_for_each(dev, i)
+        {
+                if (!tracer_is_bio_for_dev(dev, bio)){
+                        //w incrementalu duzo wchodzi tutaj (u mnie przypadek z 1 devicem)->wychodza z petli i sa submitowane dalej
+                        //LOG_DEBUG("tracing_fn bio is not for this tracer");
+                        continue;
+                }
+                // If we get here, then we know this is a device we're managing
+                // and the current bio belongs to said device.
+                if (dattobd_bio_op_flagged(bio, DATTOBD_PASSTHROUGH))
+                {
+                        pass_touch++;
+                        dattobd_bio_op_clear_flag(bio, DATTOBD_PASSTHROUGH);
+                        LOG_DEBUG("ATTOBD_PASSTHROUGH hit %d", pass_touch);
+                }
+                else
+                {
+                        if (tracer_should_trace_bio(dev, bio))
+                        {
+                                if (test_bit(SNAPSHOT, &dev->sd_state)){
+                                        ret = snap_trace_bio(dev, bio);
+                                }
+                                else{
+                                        ret = inc_trace_bio(dev, bio);
+                                }
+                                goto out;
+                        }
+                }
 
-        //         // Now we can submit the bio.
-        //         ret = SUBMIT_BIO_REAL(dev, bio);
-        //         LOG_DEBUG("DATTOBD_PASSTHROUGH na koniec hit %d", pass_touch);  
-        //         goto out;
+                // Now we can submit the bio.
+                ret = SUBMIT_BIO_REAL(dev, bio);
+                LOG_DEBUG("DATTOBD_PASSTHROUGH na koniec hit %d", pass_touch);  
+                goto out;
                 
-        // } // tracer_for_each(dev, i)
+        } // tracer_for_each(dev, i)
 #ifdef USE_BDOPS_SUBMIT_BIO
                 //this is important as hell cause without this we won't save any stuffs to the OS
                 ret = SUBMIT_BIO_REAL(NULL, bio);
