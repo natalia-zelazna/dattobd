@@ -28,7 +28,10 @@ blk_qc_t (*dattobd_submit_bio_noacct_passthrough)(struct bio *) =
 int dattobd_submit_bio_real(
     struct snap_device* dev,
     struct bio *bio)
-{
+{ 
+    static long long number_of_calls=0;
+    number_of_calls++;
+    LOG_DEBUG("dattobd_submit_bio_real call no %lld", number_of_calls);
     return dattobd_submit_bio_noacct_passthrough(bio);
 }
 
