@@ -10,9 +10,16 @@
 #include "bio_helper.h"
 #include "tracing_params.h"
 
-#if defined HAVE_MAKE_REQUEST_FN_INT || defined  HAVE_MRF_RETURN_TYPE_INT
+#if defined HAVE_MAKE_REQUEST_FN_INT 
 
     #define MRF_RETURN_TYPE int
+    #define MRF_RETURN(ret) return ret
+    int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
+                        struct bio *bio);
+
+#elif defined  HAVE_MRF_RETURN_TYPE_INT
+
+    #define MRF_RETURN_TYPE unsigned int
     #define MRF_RETURN(ret) return ret
     int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
                         struct bio *bio);

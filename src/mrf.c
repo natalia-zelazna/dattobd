@@ -58,13 +58,13 @@ void dattobd_set_bd_mrf(struct block_device *bdev, make_request_fn *mrf)
 #endif
 
 #ifdef USE_BDOPS_SUBMIT_BIO
-
-
 MRF_RETURN_TYPE (*dattobd_blk_mq_submit_bio)(struct bio *) = (BLK_MQ_SUBMIT_BIO_ADDR != 0) ?
 	(MRF_RETURN_TYPE (*)(struct bio *)) (BLK_MQ_SUBMIT_BIO_ADDR + (long long)(((void *)kfree)-(void *)KFREE_ADDR)) : NULL;
 
 MRF_RETURN_TYPE dattobd_snap_null_mrf(struct bio *bio){
+#ifdef HAVE_NONVOID_SUBMIT_BIO_1
 	return dattobd_blk_mq_submit_bio(bio);
+        
 }
 struct block_device_operations* dattobd_get_bd_ops(struct block_device *bdev){
 	return (struct block_device_operations*)bdev->bd_disk->fops;

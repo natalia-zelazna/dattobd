@@ -68,6 +68,7 @@ while read SYMBOL_NAME; do
 		continue
 	fi
 
+echo "map file used is ${SYSTEM_MAP_FILE}"
 	echo "performing $SYMBOL_NAME lookup"
 	MACRO_NAME="$(echo ${SYMBOL_NAME} | awk '{print toupper($0)}')_ADDR"
 	SYMBOL_ADDR=$(grep " ${SYMBOL_NAME}$" "${SYSTEM_MAP_FILE}" | awk '{print $1}')
