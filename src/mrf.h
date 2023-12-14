@@ -12,26 +12,26 @@
 
 #ifdef HAVE_MAKE_REQUEST_FN_INT
 
-#define MRF_RETURN_TYPE int
-#define MRF_RETURN(ret) return ret
-int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
-                     struct bio *bio);
+    #define MRF_RETURN_TYPE int
+    #define MRF_RETURN(ret) return ret
+    int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
+                        struct bio *bio);
 
 #elif defined HAVE_MAKE_REQUEST_FN_VOID
 
-#define MRF_RETURN_TYPE void
-#define MRF_RETURN(ret) return
-int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
-                     struct bio *bio);
+    #define MRF_RETURN_TYPE void
+    #define MRF_RETURN(ret) return
+    int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
+                        struct bio *bio);
 
 #elif defined HAVE_NONVOID_SUBMIT_BIO_1
 
-#define MRF_RETURN_TYPE blk_qc_t
-#define MRF_RETURN(ret) return BLK_QC_T_NONE
-#ifndef USE_BDOPS_SUBMIT_BIO
-int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
-                     struct bio *bio);
-#endif // USE_BDOPS_SUBMIT_BIO
+    #define MRF_RETURN_TYPE blk_qc_t
+    #define MRF_RETURN(ret) return BLK_QC_T_NONE
+    #ifndef USE_BDOPS_SUBMIT_BIO
+    int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
+                        struct bio *bio);       
+    #endif // USE_BDOPS_SUBMIT_BIO
 
 #else
 

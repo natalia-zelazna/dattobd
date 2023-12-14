@@ -66,6 +66,10 @@ MRF_RETURN_TYPE (*dattobd_blk_mq_submit_bio)(struct bio *) = (BLK_MQ_SUBMIT_BIO_
 MRF_RETURN_TYPE dattobd_snap_null_mrf(struct bio *bio){
 	return dattobd_blk_mq_submit_bio(bio);
 }
+struct block_device_operations* dattobd_get_bd_ops(struct block_device *bdev){
+	return (struct block_device_operations*)bdev->bd_disk->fops;
+}
+
 #else
 int dattobd_call_mrf_real(struct snap_device *dev, struct bio *bio)
 {
