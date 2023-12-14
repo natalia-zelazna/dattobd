@@ -58,34 +58,13 @@ void dattobd_set_bd_mrf(struct block_device *bdev, make_request_fn *mrf)
 #endif
 
 #ifdef USE_BDOPS_SUBMIT_BIO
-MRF_RETURN_TYPE dattobd_null_mrf(struct bio *bio)
-{
-    // Before we can submit our bio to the original device... 
-    // If there's any bio in the bio_list that ISN'T our bio, requeue it and 
-    // return early, because that's what would happen anyway if we submit 
-    // the bio. submit_bio has a mechanism to prevent multiple bio's from 
-    // being active at once. This mechanism also messes us up, since 
-    // tracing_fn was already called from a submit_bio - so we have to clear
-    // the bio_list but only if the only bio in the list, is our bio... 
-    if (current->bio_list)
-    {
-        struct bio* bio_in_list = current->bio_list->head;
-        while (bio_in_list)
-        {
-            if (bio_in_list != bio)
-            {
-                bio_list_add(&current->bio_list[0], bio);
-                MRF_RETURN(0); // return BLK_QC_T_NONE;
-            }
-            bio_in_list = bio_in_list->bi_next;
-        }
-        current->bio_list = NULL; // don't free- it's stack allocated.
-    }
-    // Note, this is the global submit_bio - not the submit_bio function ptr
-    // that is a member of struct block_device_operations - because this is
-    // what we'll be using to submit IO to the real disk - the kernel's internal
-    // submit_bio impl. also knows to account for null function ptrs.
-    return submit_bio(bio);
+
+
+MRF_RETURN_TYPE (*dattobd_blk_mq_submit_bio)(struct bio *) = (BLK_MQ_SUBMIT_BIO_ADDR != 0) ?
+	(MRF_RETURN_TYPE (*)(struct bio *)) (BLK_MQ_SUBMIT_BIO_ADDR + (long long)(((void *)kfree)-(void *)KFREE_ADDR)) : NULL;
+
+MRF_RETURN_TYPE dattobd_snap_null_mrf(struct bio *bio){
+	return dattobd_blk_mq_submit_bio(bio);
 }
 #else
 int dattobd_call_mrf_real(struct snap_device *dev, struct bio *bio)

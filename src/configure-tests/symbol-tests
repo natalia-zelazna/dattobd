@@ -1,3 +1,5 @@
+blk_mq_submit_bio
+kfree
 sys_mount
 sys_umount
 sys_oldumount
