@@ -1,59 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-
-/*
- * Copyright (C) 2022-2023 Datto Inc.
- */
-
 #ifndef MRF_H_
 #define MRF_H_
 
+#include "mrf_type.h"
 #include "bio_helper.h"
 #include "tracing_params.h"
-
-#if defined HAVE_MAKE_REQUEST_FN_INT
-
-#define MRF_RETURN_TYPE int
-#define MRF_RETURN(ret) return ret
-int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
-                     struct bio *bio);
-
-#elif defined HAVE_MRF_RETURN_TYPE_INT
-
-#define MRF_RETURN_TYPE unsigned int
-#define MRF_RETURN(ret) return ret
-int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
-                     struct bio *bio);
-
-#elif defined HAVE_MAKE_REQUEST_FN_VOID
-
-#define MRF_RETURN_TYPE void
-#define MRF_RETURN(ret) return
-int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
-                     struct bio *bio);
-
-#elif defined HAVE_NONVOID_SUBMIT_BIO_1
-
-#define MRF_RETURN_TYPE blk_qc_t
-#define MRF_RETURN(ret) return BLK_QC_T_NONE
-#ifndef USE_BDOPS_SUBMIT_BIO
-int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
-                     struct bio *bio);
-#endif // USE_BDOPS_SUBMIT_BIO
-
-// #elif !defined HAVE_MAKE_REQUEST_FN_IN_QUEUE && defined HAVE_BDOPS_SUBMIT_BIO
-// #define MRF_RETURN_TYPE blk_qc_t
-// #define MRF_RETURN(ret) return BLK_QC_T_NONE
-// #ifndef USE_BDOPS_SUBMIT_BIO
-// int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
-//                      struct bio *bio);
-// #endif // USE_BDOPS_SUBMIT_BIO
-
-#else
-
-#define MRF_RETURN_TYPE void
-#define MRF_RETURN(ret) return
-
-#endif
 
 #if defined HAVE_BLK_ALLOC_QUEUE_2 || defined HAVE_BLK_ALLOC_QUEUE_RH_2
 #define HAVE_BLK_ALLOC_QUEUE
@@ -64,6 +14,10 @@ int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
 MRF_RETURN_TYPE dattobd_null_mrf(struct request_queue *q, struct bio *bio);
 #endif
 
+#if !defined NO_DATTOBD_CALL_MRF
+int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
+                     struct bio *bio);
+#endif
 #ifdef USE_BDOPS_SUBMIT_BIO
 MRF_RETURN_TYPE dattobd_snap_null_mrf(struct bio *bio);
 MRF_RETURN_TYPE dattobd_null_mrf(struct bio *bio);
