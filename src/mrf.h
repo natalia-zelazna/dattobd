@@ -10,7 +10,7 @@
 #include "bio_helper.h"
 #include "tracing_params.h"
 
-#ifdef HAVE_MAKE_REQUEST_FN_INT
+#if defined HAVE_MAKE_REQUEST_FN_INT || defined  HAVE_MRF_RETURN_TYPE_INT
 
     #define MRF_RETURN_TYPE int
     #define MRF_RETURN(ret) return ret
@@ -35,8 +35,8 @@
 
 #else
 
-#define MRF_RETURN_TYPE void
-#define MRF_RETURN(ret) return
+    #define MRF_RETURN_TYPE void
+    #define MRF_RETURN(ret) return
 
 #endif
 
