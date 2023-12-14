@@ -40,13 +40,13 @@ int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
                      struct bio *bio);
 #endif // USE_BDOPS_SUBMIT_BIO
 
-#elif !defined HAVE_MAKE_REQUEST_FN_IN_QUEUE && defined HAVE_BDOPS_SUBMIT_BIO
-#define MRF_RETURN_TYPE blk_qc_t
-#define MRF_RETURN(ret) return BLK_QC_T_NONE
-#ifndef USE_BDOPS_SUBMIT_BIO
-int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
-                     struct bio *bio);
-#endif // USE_BDOPS_SUBMIT_BIO
+// #elif !defined HAVE_MAKE_REQUEST_FN_IN_QUEUE && defined HAVE_BDOPS_SUBMIT_BIO
+// #define MRF_RETURN_TYPE blk_qc_t
+// #define MRF_RETURN(ret) return BLK_QC_T_NONE
+// #ifndef USE_BDOPS_SUBMIT_BIO
+// int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
+//                      struct bio *bio);
+// #endif // USE_BDOPS_SUBMIT_BIO
 
 #else
 
