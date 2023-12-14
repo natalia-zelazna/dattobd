@@ -10,40 +10,48 @@
 #include "bio_helper.h"
 #include "tracing_params.h"
 
-#if defined HAVE_MAKE_REQUEST_FN_INT 
+#if defined HAVE_MAKE_REQUEST_FN_INT
 
-    #define MRF_RETURN_TYPE int
-    #define MRF_RETURN(ret) return ret
-    int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
-                        struct bio *bio);
+#define MRF_RETURN_TYPE int
+#define MRF_RETURN(ret) return ret
+int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
+                     struct bio *bio);
 
-#elif defined  HAVE_MRF_RETURN_TYPE_INT
+#elif defined HAVE_MRF_RETURN_TYPE_INT
 
-    #define MRF_RETURN_TYPE unsigned int
-    #define MRF_RETURN(ret) return ret
-    int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
-                        struct bio *bio);
+#define MRF_RETURN_TYPE unsigned int
+#define MRF_RETURN(ret) return ret
+int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
+                     struct bio *bio);
 
 #elif defined HAVE_MAKE_REQUEST_FN_VOID
 
-    #define MRF_RETURN_TYPE void
-    #define MRF_RETURN(ret) return
-    int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
-                        struct bio *bio);
+#define MRF_RETURN_TYPE void
+#define MRF_RETURN(ret) return
+int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
+                     struct bio *bio);
 
 #elif defined HAVE_NONVOID_SUBMIT_BIO_1
 
-    #define MRF_RETURN_TYPE blk_qc_t
-    #define MRF_RETURN(ret) return BLK_QC_T_NONE
-    #ifndef USE_BDOPS_SUBMIT_BIO
-    int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
-                        struct bio *bio);       
-    #endif // USE_BDOPS_SUBMIT_BIO
+#define MRF_RETURN_TYPE blk_qc_t
+#define MRF_RETURN(ret) return BLK_QC_T_NONE
+#ifndef USE_BDOPS_SUBMIT_BIO
+int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
+                     struct bio *bio);
+#endif // USE_BDOPS_SUBMIT_BIO
+
+#elif !defined HAVE_MAKE_REQUEST_FN_IN_QUEUE && defined HAVE_BDOPS_SUBMIT_BIO
+#define MRF_RETURN_TYPE blk_qc_t
+#define MRF_RETURN(ret) return BLK_QC_T_NONE
+#ifndef USE_BDOPS_SUBMIT_BIO
+int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q,
+                     struct bio *bio);
+#endif // USE_BDOPS_SUBMIT_BIO
 
 #else
 
-    #define MRF_RETURN_TYPE void
-    #define MRF_RETURN(ret) return
+#define MRF_RETURN_TYPE void
+#define MRF_RETURN(ret) return
 
 #endif
 
@@ -52,21 +60,20 @@
 #endif
 
 #ifdef HAVE_BLK_ALLOC_QUEUE
-//#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,7,0)
+// #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,7,0)
 MRF_RETURN_TYPE dattobd_null_mrf(struct request_queue *q, struct bio *bio);
 #endif
 
 #ifdef USE_BDOPS_SUBMIT_BIO
 MRF_RETURN_TYPE dattobd_snap_null_mrf(struct bio *bio);
 MRF_RETURN_TYPE dattobd_null_mrf(struct bio *bio);
-make_request_fn* dattobd_get_bd_mrf(struct block_device *bdev);
-struct block_device_operations* dattobd_get_bd_ops(struct block_device *bdev);
+make_request_fn *dattobd_get_bd_mrf(struct block_device *bdev);
+struct block_device_operations *dattobd_get_bd_ops(struct block_device *bdev);
 void dattobd_set_bd_mrf(struct block_device *bdev, make_request_fn *mrf);
 int dattobd_call_mrf_real(struct snap_device *dev, struct bio *bio);
 int dattobd_call_mrf(make_request_fn *fn, struct request_queue *q, struct bio *bio);
 #else
-make_request_fn* dattobd_get_bd_mrf(struct block_device *bdev);
-
+make_request_fn *dattobd_get_bd_mrf(struct block_device *bdev);
 
 /**
  * dattobd_call_mrf_real() - Submits i/o to the real/original device.
