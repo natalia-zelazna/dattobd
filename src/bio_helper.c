@@ -87,7 +87,7 @@ void dattobd_bio_copy_dev(struct bio *dst, struct bio *src)
 #ifndef HAVE_SUBMIT_BIO_1
 //#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,8,0)
 
-#ifndef HAVE_ENUM_REQ_OP || #ifndef HAVE_BIO_SET_OP_ATTRS
+#if !defined HAVE_ENUM_REQ_OP or !defined HAVE_BIO_SET_OP_ATTRS
 /**
  * dattobd_set_bio_ops() - Sets the I/O operation and additional flags in the
  * @bio.
