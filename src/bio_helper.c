@@ -459,6 +459,7 @@ error:
         LOG_ERROR(ret, "error during bio read complete callback");
         tracer_set_fail_state(dev, ret);
         tp_put(tp);
+        LOG_DEBUG("NZ erro bio_read complete");
         bio_free_clone(bio);
 }
 
@@ -664,7 +665,8 @@ static void bio_free_pages(struct bio *bio)
  * cloned &struct bio.
  */
 void bio_free_clone(struct bio *bio)
-{
+{       
+        LOG_DEBUG("NZ entr bio_free_clone");
         bio_free_pages(bio);
         bio_put(bio);
 }
@@ -777,6 +779,7 @@ error:
         if (ret)
                 LOG_ERROR(ret, "error creating read clone of write bio");
         if (new_bio)
+                LOG_DEBUG("NZ error in bio_make_read_clone");
                 bio_free_clone(new_bio);
 
         *bytes_added = 0;

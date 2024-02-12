@@ -153,6 +153,7 @@ int snap_cow_thread(void *data)
                         dattobd_bio_endio(bio, (ret) ? -EIO : 0);
                 } else {
                         if (is_failed) {
+                                LOG_DEBUG("NZ module threads 156");
                                 bio_free_clone(bio);
                                 continue;
                         }
@@ -163,7 +164,7 @@ int snap_cow_thread(void *data)
                                                "kernel thread");
                                 tracer_set_fail_state(dev, ret);
                         }
-
+                        LOG_DEBUG("NZ snap_cow_thread 167");
                         bio_free_clone(bio);
                 }
         }

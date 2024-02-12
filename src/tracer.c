@@ -269,6 +269,7 @@ error:
 
         // clean up the bio we allocated (but did not submit)
         if (new_bio)
+                LOG_DEBUG("NZ snap_cow_thread 272");
                 bio_free_clone(new_bio);
 
         if (tp)
