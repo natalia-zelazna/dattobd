@@ -185,12 +185,15 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
         struct block_device *bdev;
 
         LOG_DEBUG("ENTER %s", __func__);
+        LOG_DEBUG(" dir name passed is %s",dir_name);
 
         if (!(follow_flags & UMOUNT_NOFOLLOW))
                 lookup_flags |= LOOKUP_FOLLOW;
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,5,0)
         ret = kern_path(dir_name, lookup_flags, &path);
+        LOG_DEBUG("kern path returned %d", ret);
+
 #else
         ret = user_path_at(AT_FDCWD, dir_name, lookup_flags, &path);
 #endif //LINUX_VERSION_CODE
@@ -245,10 +248,10 @@ void post_umount_check(int dormant_ret, int umount_ret, unsigned int idx,
         struct snap_device *dev;
         struct super_block *sb;
 
-        //LOG_DEBUG("ENTER %s", __func__);
+        LOG_DEBUG("ENTER %s", __func__);
         // if we didn't do anything or failed, just return
         if (dormant_ret){
-                //LOG_DEBUG("dormant_ret");
+                LOG_DEBUG("dormant_ret");
                 return;
         }
         dev = snap_devices[idx];

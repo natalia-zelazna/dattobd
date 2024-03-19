@@ -23,6 +23,7 @@ int ftrace_path_mount(const char *dev_name, struct path *path,
         unsigned long real_flags = flags;
         char *dir_name = NULL;
         char *buf = NULL;
+LOG_DEBUG("ENTER %s", __func__);
 
         buf = kmalloc(PATH_MAX, GFP_KERNEL);
         if (!buf) {
@@ -73,7 +74,8 @@ long ftrace_do_mount(const char *dev_name, const char __user *dir_name,
         long sys_ret;
         unsigned int idx = 0;
         unsigned long real_flags = flags;
-           
+        LOG_DEBUG("ENTER %s", __func__);
+
         // get rid of the magic value if its present
         if ((real_flags & MS_MGC_MSK) == MS_MGC_VAL)
                 real_flags &= ~MS_MGC_MSK;
@@ -112,7 +114,8 @@ int ftrace_ksys_mount(char __user *dev_name, char __user *dir_name, char __user 
         long sys_ret = 0;
         unsigned int idx = 0;
         unsigned long real_flags = flags;
- 
+ LOG_DEBUG("ENTER %s", __func__);
+
         // get rid of the magic value if its present
         if ((real_flags & MS_MGC_MSK) == MS_MGC_VAL)
                 real_flags &= ~MS_MGC_MSK;
@@ -151,6 +154,7 @@ asmlinkage long ftrace_sys_mount(char __user *dev_name, char __user *dir_name,
         long sys_ret = 0;
         unsigned int idx = 0;
         unsigned long real_flags = flags;
+LOG_DEBUG("ENTER %s", __func__);
 
         // get rid of the magic value if its present
         if ((real_flags & MS_MGC_MSK) == MS_MGC_VAL)
@@ -188,6 +192,7 @@ int ftrace_path_umount(struct path *path, int flags)
         char *dir_name = NULL;
         char *buf;
         int real_flags = flags;
+LOG_DEBUG("ENTER %s", __func__);
 
         // get rid of the magic value if its present
         if ((real_flags & MS_MGC_MSK) == MS_MGC_VAL)
@@ -219,7 +224,8 @@ static int ftrace_ksys_umount(char __user *name, int flags)
 	int ret = 0;
         int sys_ret = 0;
         unsigned int idx = 0;
-        
+        LOG_DEBUG("ENTER %s", __func__);
+
         ret = handle_bdev_mount_nowrite(name, flags, &idx);
 
         sys_ret = orig_ksys_umount(name, flags);
@@ -235,6 +241,7 @@ asmlinkage long ftrace_sys_umount(char __user *name, int flags)
         int ret = 0;
         long sys_ret = 0;
         unsigned int idx = 0;
+LOG_DEBUG("ENTER %s", __func__);
 
         ret = handle_bdev_mount_nowrite(name, flags, &idx);
         sys_ret = orig_sys_umount(name, flags);
