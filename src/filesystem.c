@@ -455,7 +455,7 @@ int pathname_to_absolute(const char *pathname, char **buf, int *len_res)
 {
         int ret;
         struct path path = {};
-
+LOG_DEBUG("ENTER %s", __func__);
         ret = kern_path(pathname, LOOKUP_FOLLOW, &path);
         if (ret) {
                 LOG_ERROR(ret, "error finding path for pathname");
@@ -465,11 +465,12 @@ int pathname_to_absolute(const char *pathname, char **buf, int *len_res)
         ret = path_get_absolute_pathname(&path, buf, len_res);
         if (ret)
                 goto error;
-
+LOG_DEBUG("NZ before path put3 %s", pathname);
         path_put(&path);
         return 0;
 
 error:
+LOG_DEBUG("NZ before path put4 %s", pathname);
         LOG_ERROR(ret, "error converting pathname to absolute pathname");
         path_put(&path);
         return ret;
@@ -959,8 +960,7 @@ loff_t noop_llseek(struct file *file, loff_t offset, int origin)
  * Given a path decrement the reference count to the dentry and the vfsmount.
  */
 void path_put(const struct path *path)
-{
-        dput(path->dentry);
+{  
         mntput(path->mnt);
 }
 #endif
