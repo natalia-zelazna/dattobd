@@ -285,6 +285,7 @@ int user_path_at(int dfd, const char __user *name, unsigned flags,
 {
         struct nameidata nd;
         char *tmp = getname(name);
+        LOG_DEBUG("ENTered user_path_at with name %s tmp %s ",name, tmp);
         int err = PTR_ERR(tmp);
         if (!IS_ERR(tmp)) {
                 BUG_ON(flags & LOOKUP_PARENT);
