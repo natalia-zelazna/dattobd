@@ -246,7 +246,7 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
         path_put(&path);
         return ret;
 out:
-        LOG_DEBUG("NZ before path put2 in OUT %d", ret);
+        LOG_DEBUG("NZ before path put2 in OUT %p", &path);
         path_put(&path);
         *idx_out = 0;
         return ret;
