@@ -183,9 +183,10 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
         int lookup_flags = 0; // init_umount LOOKUP_MOUNTPOINT;
         struct path path;
         struct block_device *bdev;
-
+        
         LOG_DEBUG("ENTER %s", __func__);
-        LOG_DEBUG(" dir name passed is %s",dir_name);
+
+        LOG_DEBUG(" dir name passed is %p",(void*)dir_name);
 
         if (!(follow_flags & UMOUNT_NOFOLLOW))
                 lookup_flags |= LOOKUP_FOLLOW;
