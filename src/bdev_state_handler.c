@@ -193,14 +193,14 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
         LOG_DEBUG("lookup flags are 0x%x", lookup_flags);
 
         LOG_DEBUG("in at flags for bug_on are 0x%x",(0x0010 & lookup_flags));
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,5,0)
+//#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,5,0)
         ret = kern_path(dir_name, lookup_flags, &path);
         LOG_DEBUG("kern path returned %d", ret);
 
-#else
-        ret = user_path_at(AT_FDCWD, dir_name, lookup_flags, &path);
+//#else tu zrob ifa na kern+path
+        //ret = user_path_at(AT_FDCWD, dir_name, lookup_flags, &path);
          LOG_DEBUG("dupa");
-#endif //LINUX_VERSION_CODE
+//#endif //LINUX_VERSION_CODE
 
     //    LOG_DEBUG("1path->dentry: %p", path.dentry);
    //     LOG_DEBUG(" 2path->mnt->mnt_root: %p", path.mnt);
