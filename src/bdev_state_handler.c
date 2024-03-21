@@ -199,29 +199,29 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
         ret = user_path_at(AT_FDCWD, dir_name, lookup_flags, &path);
          LOG_DEBUG("dupa");
 #endif //LINUX_VERSION_CODE
-        LOG_DEBUG("1path->dentry: %p", path.dentry);
-        LOG_DEBUG(" 2path->mnt->mnt_root: %p", path.mnt);
-        LOG_DEBUG("3path->dentry: %p, path->mnt->mnt_root:", path.dentry->d_name.name);
-  LOG_DEBUG(" 4path->mnt->mnt_root: %p", path.mnt->mnt_root);
+    //    LOG_DEBUG("1path->dentry: %p", path.dentry);
+   //     LOG_DEBUG(" 2path->mnt->mnt_root: %p", path.mnt);
+   //     LOG_DEBUG("3path->dentry: %p, path->mnt->mnt_root:", path.dentry->d_name.name);
+  //LOG_DEBUG(" 4path->mnt->mnt_root: %p", path.mnt->mnt_root);
         //LOG_DEBUG(" 5path->mnt->mnt_root: %p", `path.mnt->mnt_root->d_name.name);
 
 
-        {
-        void* ptr = (void*)path.mnt->mnt_root;
-        int i;
-        for (i = 0; i < 10; i++) {
-        LOG_DEBUG("dump at %d: %02X ", i, *((char*)ptr + i)); // Cast the pointer to char* and access bytes
-        }
+        // {
+        // void* ptr = (void*)path.mnt->mnt_root;
+        // int i;
+        // for (i = 0; i < 10; i++) {
+        // LOG_DEBUG("dump at %d: %02X ", i, *((char*)ptr + i)); // Cast the pointer to char* and access bytes
+        // }
         
                 
-        }
+        // }
 
         
 
         if (path.dentry != path.mnt->mnt_root) {
                 // path specified isn't a mount point
                 ret = -ENODEV;
-                LOG_DEBUG("path specified isn't a mount point %s", dir_name);
+             LOG_DEBUG("path specified isn't a mount point %s", dir_name);
         
                 goto out;
         }
