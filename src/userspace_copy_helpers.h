@@ -9,7 +9,7 @@
 
 #include "dattobd.h"
 #include "includes.h"
-
+#include "logging.h"
 int copy_string_from_user(const char __user *data, char **out_ptr);
 
 int get_setup_params(const struct setup_params __user *in, unsigned int *minor,
