@@ -191,22 +191,21 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
         if (!(follow_flags & UMOUNT_NOFOLLOW))
                 lookup_flags |= LOOKUP_FOLLOW;
         LOG_DEBUG("lookup flags are 0x%x", lookup_flags);
-
         LOG_DEBUG("in at flags for bug_on are 0x%x",(0x0010 & lookup_flags));
-//#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,5,0)
+
+#ifdef HAVE_KERN_PATH
         ret = kern_path(dir_name, lookup_flags, &path);
         LOG_DEBUG("kern path returned %d", ret);
+#else 
+        ret = user_path_at(AT_FDCWD, dir_name, lookup_flags, &path);
+        LOG_DEBUG("used kern path");
+#endif //kern path
 
-//#else tu zrob ifa na kern+path
-        //ret = user_path_at(AT_FDCWD, dir_name, lookup_flags, &path);
-         LOG_DEBUG("dupa");
-//#endif //LINUX_VERSION_CODE
-
-    //    LOG_DEBUG("1path->dentry: %p", path.dentry);
-   //     LOG_DEBUG(" 2path->mnt->mnt_root: %p", path.mnt);
-   //     LOG_DEBUG("3path->dentry: %p, path->mnt->mnt_root:", path.dentry->d_name.name);
-  //LOG_DEBUG(" 4path->mnt->mnt_root: %p", path.mnt->mnt_root);
-        //LOG_DEBUG(" 5path->mnt->mnt_root: %p", `path.mnt->mnt_root->d_name.name);
+        LOG_DEBUG("1path->dentry: %p", path.dentry);
+        LOG_DEBUG("2path->mnt->mnt_root: %p", path.mnt);
+        LOG_DEBUG("3path->dentry name: %s, ", path.dentry->d_name.name);
+        LOG_DEBUG(" 4path->mnt->mnt_root root: %p", path.mnt->mnt_root);
+        LOG_DEBUG(" 5path->mnt->mnt_root name: %s", path.mnt->mnt_root->d_name.name);
 
 
         // {
