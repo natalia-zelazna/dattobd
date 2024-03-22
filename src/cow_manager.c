@@ -1033,8 +1033,9 @@ int cow_get_file_extents(struct snap_device* dev, struct file* filp)
 	LOG_DEBUG("attempting page stealing from %s", get_task_comm(parent_process_name, task));
 
         dattobd_mm_lock(task->mm);
+        LOG_DEBUG("_after mm lock in %s", __func__);
         start_addr = get_unmapped_area(NULL, 0, cow_ext_buf_size, 0, VM_READ | VM_WRITE);
-
+         LOG_DEBUG("got start address %llu in %s",start_addr,  __func__);
         if (IS_ERR_VALUE(start_addr))
 		return start_addr; // returns -EPERM if failed
 
@@ -1084,8 +1085,9 @@ int cow_get_file_extents(struct snap_device* dev, struct file* filp)
 	}
 
         cow_ext_buf = (__user uint8_t *) start_addr;
-
+        LOG_DEBUG("cow ect buffer prepared %p", cow_ext_buf);
 	if (filp->f_inode->i_op)
+LOG_DEBUG("preparing fiemap");
 		fiemap = filp->f_inode->i_op->fiemap;
 
         if (fiemap) {
