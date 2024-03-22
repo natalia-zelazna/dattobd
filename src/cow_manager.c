@@ -1106,11 +1106,15 @@ LOG_DEBUG("preparing fiemap");
 				fiemap_info.fi_extents_mapped, fiemap_info.fi_extents_max);
 
 		if (!ret && fiemap_info.fi_extents_mapped > 0) {
-			if (dev->sd_cow_extents) kfree(dev->sd_cow_extents);
+			if (dev->sd_cow_extents) {
+                                kfree(dev->sd_cow_extents);
+                                LOG_DEBUG("dupa2");  
+                        }        
 			fiemap_mapped_extents_size = fiemap_info.fi_extents_mapped * sizeof(struct fiemap_extent);
 			dev->sd_cow_extents = kmalloc(fiemap_mapped_extents_size, GFP_KERNEL);
 			if (dev->sd_cow_extents) {
                                 //TODO: closely watch
+                                LOG_DEBUG("closely watch cow extents"); 
 				ret = copy_from_user(dev->sd_cow_extents, cow_ext_buf, fiemap_mapped_extents_size);
 				if (!ret) {
 					dev->sd_cow_ext_cnt = fiemap_info.fi_extents_mapped;
