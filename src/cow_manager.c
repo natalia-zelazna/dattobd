@@ -1014,7 +1014,7 @@ int cow_get_file_extents(struct snap_device* dev, struct file* filp)
 	struct page *pg;
 	__user uint8_t *cow_ext_buf;
 
-        //LOG_DEBUG("ENTER %s for device %s", __func__, dev->sd_cow_path);
+        LOG_DEBUG("ENTER %s for device wtih faulty path", __func__);
         unsigned long cow_ext_buf_size = ALIGN(dattobd_cow_ext_buf_size, PAGE_SIZE);
     
         int (*fiemap)(struct inode *, struct fiemap_extent_info *, u64 start, u64 len);

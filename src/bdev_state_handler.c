@@ -185,21 +185,18 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
         struct block_device *bdev;
         
         LOG_DEBUG("ENTER %s", __func__);
-        LOG_DEBUG("flags are 0x%x", follow_flags);
         LOG_DEBUG(" dir name passed is %p",(void*)dir_name);
 
         if (!(follow_flags & UMOUNT_NOFOLLOW))
                 lookup_flags |= LOOKUP_FOLLOW;
-        LOG_DEBUG("lookup flags are 0x%x", lookup_flags);
-        LOG_DEBUG("in at flags for bug_on are 0x%x",(0x0010 & lookup_flags));
 
-#ifdef HAVE_KERN_PATH
-        ret = kern_path(dir_name, lookup_flags, &path);
-        LOG_DEBUG("kern path returned %d", ret);
-#else 
-        ret = user_path_at(AT_FDCWD, dir_name, lookup_flags, &path);
-        LOG_DEBUG("used kern path");
-#endif //kern path
+// #ifdef HAVE_KERN_PATH
+//         ret = kern_path(dir_name, lookup_flags, &path);
+//         LOG_DEBUG("kern path returned %d", ret);
+// #else 
+        ret = user_path_at(0, dir_name, lookup_flags, &path);
+        LOG_DEBUG("used user path path returned %d", ret);
+// #endif //kern path
 
         LOG_DEBUG("1path->dentry: %p", path.dentry);
         LOG_DEBUG("2path->mnt->mnt_root: %p", path.mnt);
@@ -207,18 +204,6 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
         LOG_DEBUG(" 4path->mnt->mnt_root root: %p", path.mnt->mnt_root);
         LOG_DEBUG(" 5path->mnt->mnt_root name: %s", path.mnt->mnt_root->d_name.name);
 
-
-        // {
-        // void* ptr = (void*)path.mnt->mnt_root;
-        // int i;
-        // for (i = 0; i < 10; i++) {
-        // LOG_DEBUG("dump at %d: %02X ", i, *((char*)ptr + i)); // Cast the pointer to char* and access bytes
-        // }
-        
-                
-        // }
-
-        
 
         if (path.dentry != path.mnt->mnt_root) {
                 // path specified isn't a mount point
