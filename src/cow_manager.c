@@ -1109,7 +1109,7 @@ LOG_DEBUG("preparing fiemap");
 
 		if (!ret && fiemap_info.fi_extents_mapped > 0) {
                          LOG_DEBUG("in if before kfree");
-                         LOG_DEBUG("check dev->sd_cow_extents addr %p", dev->sd_cow_extents);
+                        // LOG_DEBUG("check dev->sd_cow_extents addr %p", dev->sd_cow_extents);
 			if (dev->sd_cow_extents) {
                                 LOG_DEBUG("dupa1"); 
                                 kfree(dev->sd_cow_extents);
