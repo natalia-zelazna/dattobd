@@ -541,13 +541,13 @@ error:
 static int __tracer_destroy_cow(struct snap_device *dev, int close_method)
 {
         int ret = 0;
-
+/*
         dev->sd_cow_inode = NULL;
         dev->sd_falloc_size = 0;
         dev->sd_cache_size = 0;
-
+*/
         if (dev->sd_cow) {
-                LOG_DEBUG("destroying cow manager");
+                LOG_DEBUG("destroying cow manager close method %d",);
 
                 if (close_method == 0) {
                         cow_free(dev->sd_cow);

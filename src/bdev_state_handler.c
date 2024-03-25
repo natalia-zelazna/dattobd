@@ -236,7 +236,7 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
         }
 
         if (!mount_writable)
-                ret = __handle_bdev_mount_nowrite(path.mnt, idx_out);
+                ret = __handle_bdev_mount_nowrite(path.mnt, idx_out); //TU!!!!
         else
                 ret = __handle_bdev_mount_writable(dir_name, bdev, idx_out);
         if (ret) {

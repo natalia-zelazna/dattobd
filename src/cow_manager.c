@@ -1014,7 +1014,7 @@ int cow_get_file_extents(struct snap_device* dev, struct file* filp)
 	struct page *pg;
 	__user uint8_t *cow_ext_buf;
 
-        LOG_DEBUG("ENTER %s for device %s", __func__, dev->sd_cow_path);
+        //LOG_DEBUG("ENTER %s for device %s", __func__, dev->sd_cow_path);
         unsigned long cow_ext_buf_size = ALIGN(dattobd_cow_ext_buf_size, PAGE_SIZE);
     
         int (*fiemap)(struct inode *, struct fiemap_extent_info *, u64 start, u64 len);
@@ -1108,6 +1108,7 @@ LOG_DEBUG("preparing fiemap");
 
 		if (!ret && fiemap_info.fi_extents_mapped > 0) {
                          LOG_DEBUG("in if before kfree");
+                         LOG_DEBUG("check dev->sd_cow_extents addr %p", dev->sd_cow_extents);
 			if (dev->sd_cow_extents) {
                                 LOG_DEBUG("dupa1"); 
                                 kfree(dev->sd_cow_extents);
@@ -1115,7 +1116,7 @@ LOG_DEBUG("preparing fiemap");
                         }      
                         LOG_DEBUG("passed kfree");  
 			fiemap_mapped_extents_size = fiemap_info.fi_extents_mapped * sizeof(struct fiemap_extent);
-                        LOG_DEBUG("dupa3, size preapred is %d", fiemap_mapped_extents_size);
+                        LOG_DEBUG("size preapred is %d", fiemap_mapped_extents_size);
 			dev->sd_cow_extents = kmalloc(fiemap_mapped_extents_size, GFP_KERNEL);
                         LOG_DEBUG("dupa4");
 			if (dev->sd_cow_extents) {
