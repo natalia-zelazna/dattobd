@@ -541,6 +541,7 @@ error:
 static int __tracer_destroy_cow(struct snap_device *dev, int close_method)
 {
         int ret = 0;
+        LOG_DEBUG("ENTER  %s", __func__);
 /*
         dev->sd_cow_inode = NULL;
         dev->sd_falloc_size = 0;
@@ -573,7 +574,7 @@ static int __tracer_destroy_cow(struct snap_device *dev, int close_method)
 
         dev->sd_falloc_size = 0;
 	dev->sd_cache_size = 0;
-
+LOG_DEBUG("EXIT  %s", __func__);
         return ret;
 }
 
@@ -697,6 +698,7 @@ error:
  */
 static void __tracer_destroy_base_dev(struct snap_device *dev)
 {
+        LOG_DEBUG("NETER  %s", __func__);
         dev->sd_size = 0;
         dev->sd_sect_off = 0;
 
@@ -711,6 +713,7 @@ static void __tracer_destroy_base_dev(struct snap_device *dev)
                 dattobd_blkdev_put(dev->sd_base_dev);
                 dev->sd_base_dev = NULL;
         }
+        LOG_DEBUG("EXIT  %s", __func__);
 }
 
 /**
@@ -873,11 +876,13 @@ static void __tracer_copy_cow(const struct snap_device *src,
  */
 static void __tracer_destroy_cow_path(struct snap_device *dev)
 {
+        LOG_DEBUG("ENTER  %s", __func__);
         if (dev->sd_cow_path) {
                 LOG_DEBUG("freeing cow path");
                 kfree(dev->sd_cow_path);
                 dev->sd_cow_path = NULL;
         }
+        LOG_DEBUG("EXIT  %s", __func__);
 }
 
 /**
@@ -952,6 +957,7 @@ static void __tracer_bioset_exit(struct snap_device *dev)
  */
 static void __tracer_destroy_snap(struct snap_device *dev)
 {
+        LOG_DEBUG("ENTER  %s", __func__);
         LOG_DEBUG("tracer_destroy_snap");
         if (dev->sd_mrf_thread) {
                 LOG_DEBUG("stopping mrf thread");
@@ -982,6 +988,7 @@ static void __tracer_destroy_snap(struct snap_device *dev)
         }
 
         __tracer_bioset_exit(dev);
+        LOG_DEBUG("EXIT  %s", __func__);
 }
 
 /**
@@ -1163,11 +1170,13 @@ error:
  */
 static void __tracer_destroy_cow_thread(struct snap_device *dev)
 {
+        LOG_DEBUG("NETER  %s", __func__);
         if (dev->sd_cow_thread) {
                 LOG_DEBUG("stopping cow thread");
                 kthread_stop(dev->sd_cow_thread);
                 dev->sd_cow_thread = NULL;
         }
+        LOG_DEBUG("EXIT  %s", __func__);
 }
 
 /**
@@ -1802,12 +1811,14 @@ error:
  */
 void tracer_destroy(struct snap_device *dev)
 {
+        LOG_DEBUG("ENTER  %s", __func__);
         __tracer_destroy_tracing(dev);
         __tracer_destroy_cow_thread(dev);
         __tracer_destroy_snap(dev);
         __tracer_destroy_cow_path(dev);
         __tracer_destroy_cow_free(dev);
         __tracer_destroy_base_dev(dev);
+        LOG_DEBUG("EXIT  %s", __func__);
 }
 
 /**
@@ -2159,7 +2170,7 @@ void __tracer_active_to_dormant(struct snap_device *dev)
         // mark as dormant
         smp_wmb();
         clear_bit(ACTIVE, &dev->sd_state);
-
+LOG_DEBUG("EXIT  %s", __func__);
         return;
 
 error:

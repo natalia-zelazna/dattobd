@@ -476,12 +476,13 @@ int cow_sync_and_close(struct cow_manager *cm)
         if (cm->filp)
                 file_close(cm->filp);
         cm->filp = NULL;
-
+LOG_DEBUG("EXIT  %s", __func__);
         return 0;
 
 error:
         LOG_ERROR(ret, "error while syncing and closing cow manager");
         cow_free_members(cm);
+        LOG_DEBUG("EXIT ON ERROR  %s", __func__);
         return ret;
 }
 

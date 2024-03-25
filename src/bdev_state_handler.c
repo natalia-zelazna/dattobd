@@ -61,6 +61,7 @@ int __handle_bdev_mount_nowrite(const struct vfsmount *mnt,
         int ret;
         unsigned int i;
         struct snap_device *dev;
+        LOG_DEBUG("NETER  %s", __func__);
         tracer_for_each(dev, i)
         {
                 if (!dev || !test_bit(ACTIVE, &dev->sd_state) ||
@@ -83,6 +84,7 @@ int __handle_bdev_mount_nowrite(const struct vfsmount *mnt,
         LOG_DEBUG("block device umount has not been detected for device");
 out:
         *idx_out = i;
+        LOG_DEBUG("EXIT OUT  %s", __func__);
         return ret;
 }
 
@@ -185,7 +187,7 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
         struct block_device *bdev;
         
         LOG_DEBUG("ENTER %s", __func__);
-        LOG_DEBUG(" dir name passed is %p",(void*)dir_name);
+        LOG_DEBUG(" dir name passed is %s",dir_name);
 
         if (!(follow_flags & UMOUNT_NOFOLLOW))
                 lookup_flags |= LOOKUP_FOLLOW;
@@ -202,11 +204,11 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
 		goto out;
 
         }
-        LOG_DEBUG("1path->dentry: %p", path.dentry);
-        LOG_DEBUG("2path->mnt->mnt_root: %p", path.mnt);
-        LOG_DEBUG("3path->dentry name: %s, ", path.dentry->d_name.name);
-        LOG_DEBUG(" 4path->mnt->mnt_root root: %p", path.mnt->mnt_root);
-        LOG_DEBUG(" 5path->mnt->mnt_root name: %s", path.mnt->mnt_root->d_name.name);
+        // LOG_DEBUG("1path->dentry: %p", path.dentry);
+        // LOG_DEBUG("2path->mnt->mnt_root: %p", path.mnt);
+        // LOG_DEBUG("3path->dentry name: %s, ", path.dentry->d_name.name);
+        // LOG_DEBUG(" 4path->mnt->mnt_root root: %p", path.mnt->mnt_root);
+        // LOG_DEBUG(" 5path->mnt->mnt_root name: %s", path.mnt->mnt_root->d_name.name);
 
 
         if (path.dentry != path.mnt->mnt_root) {
