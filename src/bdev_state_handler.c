@@ -197,7 +197,11 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
         ret = user_path_at(0, dir_name, lookup_flags, &path);
         LOG_DEBUG("used user path path returned %d", ret);
 // #endif //kern path
+	if(ret){
+		//error finding path
+		goto out;
 
+        }
         LOG_DEBUG("1path->dentry: %p", path.dentry);
         LOG_DEBUG("2path->mnt->mnt_root: %p", path.mnt);
         LOG_DEBUG("3path->dentry name: %s, ", path.dentry->d_name.name);
