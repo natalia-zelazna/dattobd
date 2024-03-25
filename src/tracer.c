@@ -547,7 +547,7 @@ static int __tracer_destroy_cow(struct snap_device *dev, int close_method)
         dev->sd_cache_size = 0;
 */
         if (dev->sd_cow) {
-                LOG_DEBUG("destroying cow manager close method %d",);
+                LOG_DEBUG("destroying cow manager close method %d", close_method);
 
                 if (close_method == 0) {
                         cow_free(dev->sd_cow);
