@@ -183,7 +183,7 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
 {
         int ret = 0; 
         int lookup_flags = 0; // init_umount LOOKUP_MOUNTPOINT;
-        struct path path;
+        struct path path = {};
         struct block_device *bdev;
         
         LOG_DEBUG("ENTER %s", __func__);
@@ -239,7 +239,7 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
         path_put(&path);
         return ret;
 out:
-        LOG_DEBUG("NZ before path put2 in OUT %p", &path);
+        LOG_DEBUG("NZ before path put2 in OUT %p", path.dentry->d_name.name);
         path_put(&path);
         *idx_out = 0;
         return ret;
