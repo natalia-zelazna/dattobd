@@ -126,13 +126,14 @@ error:
  */
 int __cow_write_section(struct cow_manager *cm, unsigned long sect_idx)
 {
+
         int i, ret;
         int sect_size_bytes = COW_SECTION_SIZE * sizeof(uint64_t);
-
+LOG_DEBUG("ENTER %s", __func__);
         for (i = 0; i < sect_size_bytes / COW_BLOCK_SIZE; i++) {
 		int mapping_offset = (COW_BLOCK_SIZE / sizeof(cm->sects[sect_idx].mappings[0])) * i;
 		int cow_file_offset = COW_BLOCK_SIZE * i;
-
+        LOG_DEBUG("write file cm dev %p", cm->dev);
         ret = file_write(cm->filp, cm->dev, cm->sects[sect_idx].mappings,
                          cm->sect_size * sect_idx * 8 + COW_HEADER_SIZE,
                          cm->sect_size * 8);
@@ -141,7 +142,7 @@ int __cow_write_section(struct cow_manager *cm, unsigned long sect_idx)
                 return ret;
         }
         }
-
+LOG_DEBUG("EXIT %s", __func__);
         return 0;
 }
 
@@ -657,7 +658,7 @@ error:
  * * 0 - success
  * * !0 - errno indicating the error
  */
-int cow_init(const char *path, uint64_t elements, unsigned long sect_size,
+int cow_init(struct snap_device *dev, const char *path, uint64_t elements, unsigned long sect_size,
              unsigned long cache_size, uint64_t file_max, const uint8_t *uuid,
              uint64_t seqid, struct cow_manager **cm_out)
 {
@@ -692,7 +693,7 @@ int cow_init(const char *path, uint64_t elements, unsigned long sect_size,
                 __cow_calculate_allowed_sects(cache_size, cm->total_sects);
         cm->data_offset = COW_HEADER_SIZE + (cm->total_sects * (sect_size * 8));
         cm->curr_pos = cm->data_offset / COW_BLOCK_SIZE;
-
+        cm->dev = dev;
         if (uuid)
                 memcpy(cm->uuid, uuid, COW_UUID_SIZE);
         else

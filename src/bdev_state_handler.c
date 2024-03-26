@@ -265,10 +265,11 @@ void post_umount_check(int dormant_ret, int umount_ret, unsigned int idx,
         struct snap_device *dev;
         struct super_block *sb;
 
-        LOG_DEBUG("ENTER %s", __func__);
+        LOG_DEBUG("ENTER %s with name %s", __func__, dir_name);
         // if we didn't do anything or failed, just return
         if (dormant_ret){
                 LOG_DEBUG("dormant_ret");
+                LOG_DEBUG("EXIT on ret %s", __func__);
                 return;
         }
         dev = snap_devices[idx];
@@ -305,6 +306,7 @@ void post_umount_check(int dormant_ret, int umount_ret, unsigned int idx,
                                 "file-system. entering error state");
                         tracer_set_fail_state(dev, -EIO);
                         dattobd_drop_super(sb);
+                        LOG_DEBUG("EXIT err %s", __func__);
                         return;
                 }
                 dattobd_drop_super(sb);

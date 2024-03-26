@@ -226,11 +226,12 @@ static int ftrace_ksys_umount(char __user *name, int flags)
         int sys_ret = 0;
         unsigned int idx = 0;
         LOG_DEBUG("ENTER %s", __func__);
-
+        LOG_DEBUG("dirname passed is  %s ", name);
         ret = handle_bdev_mount_nowrite(name, flags, &idx);
 
         sys_ret = orig_ksys_umount(name, flags);
         post_umount_check(ret, sys_ret, idx, name);
+LOG_DEBUG("EXIT %s", __func__);
 
         return sys_ret;
 }
