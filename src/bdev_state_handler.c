@@ -201,7 +201,7 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
 // #endif //kern path
 	if(ret){
 		//error finding path
-		goto out;
+		goto out_no_path_put;
 
         }
         // LOG_DEBUG("1path->dentry: %p", path.dentry);
@@ -243,6 +243,11 @@ out:
         path_put(&path);
         *idx_out = 0;
         return ret;
+out_no_path_put:
+        LOG_DEBUG("NZ out no path put %p", &path);
+        *idx_out = 0;
+        return ret;
+
 }
 
 /**
