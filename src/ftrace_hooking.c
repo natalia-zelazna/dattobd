@@ -115,8 +115,7 @@ int ftrace_ksys_mount(char __user *dev_name, char __user *dir_name, char __user 
         long sys_ret = 0;
         unsigned int idx = 0;
         unsigned long real_flags = flags;
- LOG_DEBUG("ENTER %s", __func__);
- LOG_DEBUG("dirname passed is  %s and dev_name is %s",dir_name, dev_name);
+
         // get rid of the magic value if its present
         if ((real_flags & MS_MGC_MSK) == MS_MGC_VAL)
                 real_flags &= ~MS_MGC_MSK;
@@ -139,7 +138,6 @@ int ftrace_ksys_mount(char __user *dev_name, char __user *dir_name, char __user 
                 if (!sys_ret)
                         handle_bdev_mounted_writable(dir_name, &idx);
         }
-LOG_DEBUG("EXIT %s", __func__);
         return sys_ret;
 }
 

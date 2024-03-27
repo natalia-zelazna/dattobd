@@ -494,12 +494,10 @@ LOG_DEBUG("ENTER %s", __func__);
         ret = path_get_absolute_pathname(&path, buf, len_res);
         if (ret)
                 goto error;
-LOG_DEBUG("NZ before path put3 %s", pathname);
         path_put(&path);
         return 0;
 
 error:
-LOG_DEBUG("NZ before path put4 %s", pathname);
         LOG_ERROR(ret, "error converting pathname to absolute pathname");
         path_put(&path);
         return ret;

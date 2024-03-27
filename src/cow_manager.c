@@ -259,7 +259,7 @@ int __cow_write_header(struct cow_manager *cm, int is_clean)
 {
         int ret;
         struct cow_header ch;
-
+LOG_DEBUG("ENTER %s with is_clean %d", __func__, is_clean);
         if (is_clean){
                 cm->flags |= (1 << COW_CLEAN);
                 LOG_DEBUG("writing COW header CLEAN");
@@ -279,11 +279,12 @@ int __cow_write_header(struct cow_manager *cm, int is_clean)
         ch.nr_changed_blocks = cm->nr_changed_blocks;
 
         ret = file_write(cm->filp, cm->dev, &ch, 0, sizeof(struct cow_header));
+        LOG_DEBUG("cm_dev in write header present %p", cm->dev);
         if (ret) {
                 LOG_ERROR(ret, "error syncing cow manager header");
                 return ret;
         }
-
+LOG_DEBUG("EXIT %s", __func__);
         return 0;
 }
 
@@ -664,7 +665,7 @@ int cow_init(struct snap_device *dev, const char *path, uint64_t elements, unsig
 {
         int ret;
         struct cow_manager *cm;
-
+LOG_DEBUG("ENTER %s", __func__ );
         LOG_DEBUG("allocating cow manager, seqid = %llu",
                   (unsigned long long)seqid);
         cm = kzalloc(sizeof(struct cow_manager), GFP_KERNEL);
@@ -694,6 +695,8 @@ int cow_init(struct snap_device *dev, const char *path, uint64_t elements, unsig
         cm->data_offset = COW_HEADER_SIZE + (cm->total_sects * (sect_size * 8));
         cm->curr_pos = cm->data_offset / COW_BLOCK_SIZE;
         cm->dev = dev;
+        LOG_DEBUG("dev initialized %p", cm->dev);
+        
         if (uuid)
                 memcpy(cm->uuid, uuid, COW_UUID_SIZE);
         else
@@ -1016,7 +1019,8 @@ int cow_get_file_extents(struct snap_device* dev, struct file* filp)
 	struct page *pg;
 	__user uint8_t *cow_ext_buf;
 
-        LOG_DEBUG("ENTER %s for device wtih faulty path", __func__);
+        LOG_DEBUG("ENTER %s", __func__);
+        LOG_DEBUG("NZ dev is %p and extents is %p",dev, dev->sd_cow_extents);
         unsigned long cow_ext_buf_size = ALIGN(dattobd_cow_ext_buf_size, PAGE_SIZE);
     
         int (*fiemap)(struct inode *, struct fiemap_extent_info *, u64 start, u64 len);
