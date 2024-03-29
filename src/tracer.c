@@ -548,7 +548,7 @@ static int __tracer_destroy_cow(struct snap_device *dev, int close_method)
         dev->sd_cache_size = 0;
 */
         if (dev->sd_cow) {
-                LOG_DEBUG("destroying cow manager close method %d", close_method);
+                LOG_DEBUG("destroying cow manager close method %d for %s", close_method, dev->sd_bdev_path);
 
                 if (close_method == 0) {
                         cow_free(dev->sd_cow);
@@ -569,12 +569,12 @@ static int __tracer_destroy_cow(struct snap_device *dev, int close_method)
 		dev->sd_cow_ext_cnt = 0;
 		dev->sd_cow_inode = NULL;
 	} else {
-		LOG_DEBUG("preserving cow file extents");
+		LOG_DEBUG("preserving cow file extents for %s", dev->sd_bdev_path);
 	}
 
         dev->sd_falloc_size = 0;
 	dev->sd_cache_size = 0;
-LOG_DEBUG("EXIT  %s", __func__);
+LOG_DEBUG("EXIT  %s with ret %d", __func__);
         return ret;
 }
 
@@ -2175,7 +2175,7 @@ void __tracer_active_to_dormant(struct snap_device *dev)
         smp_wmb();
         clear_bit(ACTIVE, &dev->sd_state);
          LOG_DEBUG("ACTIVE cleared for dev %s", dev->sd_bdev_path);
-LOG_DEBUG("EXIT  %s", __func__);
+LOG_DEBUG("EXIT  %s for %s", __func__, dev->sd_bdev_path);
         return;
 
 error:

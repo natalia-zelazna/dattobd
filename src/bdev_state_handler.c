@@ -229,10 +229,12 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
                 goto out;
         }
         path_put(&path);
+        LOG_DEBUG("EXIT  %s", __func__);
         return ret;
 out:
         path_put(&path);
         *idx_out = 0;
+        LOG_DEBUG("EXIT  from out %s", __func__);
         return ret;
 
 }
