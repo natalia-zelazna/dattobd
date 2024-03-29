@@ -131,7 +131,8 @@ static ssize_t dattobd_kernel_write(struct file *filp,struct snap_device* dev, c
  * @len: The number of bytes in the transfer.
  *
  * Return:
- * * 0 - success
+ * * 0 - 
+ success
  * * !0 - errno indicating the error
  */
 int file_io(struct file *filp, struct snap_device* dev, int is_write, void *buf, sector_t offset,

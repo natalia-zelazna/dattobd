@@ -129,7 +129,7 @@ int __cow_write_section(struct cow_manager *cm, unsigned long sect_idx)
 
         int i, ret;
         int sect_size_bytes = COW_SECTION_SIZE * sizeof(uint64_t);
-LOG_DEBUG("ENTER %s", __func__);
+//LOG_DEBUG("ENTER %s", __func__);
         for (i = 0; i < sect_size_bytes / COW_BLOCK_SIZE; i++) {
 		int mapping_offset = (COW_BLOCK_SIZE / sizeof(cm->sects[sect_idx].mappings[0])) * i;
 		int cow_file_offset = COW_BLOCK_SIZE * i;
@@ -141,7 +141,7 @@ LOG_DEBUG("ENTER %s", __func__);
                 return ret;
         }
         }
-LOG_DEBUG("EXIT %s", __func__);
+//LOG_DEBUG("EXIT %s", __func__);
         return 0;
 }
 
@@ -462,7 +462,7 @@ int cow_sync_and_close(struct cow_manager *cm)
         int ret;
 
         LOG_DEBUG("ENTER cow_sync_and_close");
-        LOG_DEBUG("NZ dev check on entrance %p ext %p path is %s", cm->dev, cm->dev->sd_cow_extents, cm->dev->sd_bdev_path);  
+        LOG_DEBUG("NZ dev check on entrance %p ext %p path is", cm->dev, cm->dev->sd_cow_extents);  
         ret = __cow_sync_and_free_sections(cm, 0);
         if (ret)
                 goto error;
