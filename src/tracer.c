@@ -1778,6 +1778,7 @@ int __tracer_setup_unverified(struct snap_device *dev, unsigned int minor,
         else
                 clear_bit(SNAPSHOT, &dev->sd_state);
         clear_bit(ACTIVE, &dev->sd_state);
+         LOG_DEBUG("ACTIVE cleared for dev %s", dev->sd_bdev_path);
         set_bit(UNVERIFIED, &dev->sd_state);
 
         dev->sd_cache_size = cache_size;
@@ -1849,6 +1850,7 @@ int tracer_setup_active_snap(struct snap_device *dev, unsigned int minor,
         LOG_DEBUG("ENTER tracer_setup_active_snap");
         set_bit(SNAPSHOT, &dev->sd_state);
         set_bit(ACTIVE, &dev->sd_state);
+         LOG_DEBUG("ACTIVE set for dev %s", dev->sd_bdev_path);
         clear_bit(UNVERIFIED, &dev->sd_state);
 
         // setup base device
@@ -1925,6 +1927,7 @@ int tracer_active_snap_to_inc(struct snap_device *old_dev)
 
         clear_bit(SNAPSHOT, &dev->sd_state);
         set_bit(ACTIVE, &dev->sd_state);
+         LOG_DEBUG("ACTIVE set for dev %s", dev->sd_bdev_path);
         clear_bit(UNVERIFIED, &dev->sd_state);
 
         // copy / set fields we need
@@ -2038,6 +2041,7 @@ int tracer_active_inc_to_snap(struct snap_device *old_dev, const char *cow_path,
 
         set_bit(SNAPSHOT, &dev->sd_state);
         set_bit(ACTIVE, &dev->sd_state);
+         LOG_DEBUG("ACTIVE set for dev %s", dev->sd_bdev_path);
         clear_bit(UNVERIFIED, &dev->sd_state);
 
         fallocated_space =
@@ -2170,6 +2174,7 @@ void __tracer_active_to_dormant(struct snap_device *dev)
         // mark as dormant
         smp_wmb();
         clear_bit(ACTIVE, &dev->sd_state);
+         LOG_DEBUG("ACTIVE cleared for dev %s", dev->sd_bdev_path);
 LOG_DEBUG("EXIT  %s", __func__);
         return;
 
@@ -2201,6 +2206,7 @@ void __tracer_unverified_snap_to_active(struct snap_device *dev,
 
         // mark as active
         set_bit(ACTIVE, &dev->sd_state);
+        LOG_DEBUG("ACTIVE set for dev %s", dev->sd_bdev_path);
         clear_bit(UNVERIFIED, &dev->sd_state);
 
         dev->sd_bdev_path = NULL;
@@ -2297,6 +2303,7 @@ void __tracer_unverified_inc_to_active(struct snap_device *dev,
 
         // mark as active
         set_bit(ACTIVE, &dev->sd_state);
+        LOG_DEBUG("ACTIVE set for dev %s", dev->sd_bdev_path);
         clear_bit(UNVERIFIED, &dev->sd_state);
 
         dev->sd_bdev_path = NULL;
@@ -2409,6 +2416,7 @@ void __tracer_dormant_to_active(struct snap_device *dev,
         // set the state to active
         smp_wmb();
         set_bit(ACTIVE, &dev->sd_state);
+        LOG_DEBUG("ACTIVE set for dev %s", dev->sd_bdev_path);
         clear_bit(UNVERIFIED, &dev->sd_state);
 
         kfree(cow_path);
