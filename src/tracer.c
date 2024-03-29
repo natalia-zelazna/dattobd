@@ -2158,7 +2158,7 @@ void __tracer_active_to_dormant(struct snap_device *dev)
 {
         int ret;
 
-        LOG_DEBUG("ENTER __tracer_active_to_dormant");
+        LOG_DEBUG("ENTER __tracer_active_to_dormant path %s", dev->sd_bdev_path);
         // stop the cow thread
         __tracer_destroy_cow_thread(dev);
 

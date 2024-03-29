@@ -133,7 +133,6 @@ LOG_DEBUG("ENTER %s", __func__);
         for (i = 0; i < sect_size_bytes / COW_BLOCK_SIZE; i++) {
 		int mapping_offset = (COW_BLOCK_SIZE / sizeof(cm->sects[sect_idx].mappings[0])) * i;
 		int cow_file_offset = COW_BLOCK_SIZE * i;
-        LOG_DEBUG("write file cm dev %p", cm->dev);
         ret = file_write(cm->filp, cm->dev, cm->sects[sect_idx].mappings,
                          cm->sect_size * sect_idx * 8 + COW_HEADER_SIZE,
                          cm->sect_size * 8);
@@ -463,7 +462,7 @@ int cow_sync_and_close(struct cow_manager *cm)
         int ret;
 
         LOG_DEBUG("ENTER cow_sync_and_close");
-
+        LOG_DEBUG("NZ dev check on entrance %p ext %p path is %s", cm->dev, cm->dev->sd_cow_extents, cm->dev->sd_bdev_path);  
         ret = __cow_sync_and_free_sections(cm, 0);
         if (ret)
                 goto error;
@@ -1020,9 +1019,9 @@ int cow_get_file_extents(struct snap_device* dev, struct file* filp)
 	__user uint8_t *cow_ext_buf;
 
         LOG_DEBUG("ENTER %s", __func__);
-        LOG_DEBUG("NZ dev is %p and extents is %p",dev, dev->sd_cow_extents);
+        LOG_DEBUG("NZ dev is %p, path is %s and extents is %p",dev, dev->sd_bdev_path, dev->sd_cow_extents);
         unsigned long cow_ext_buf_size = ALIGN(dattobd_cow_ext_buf_size, PAGE_SIZE);
-    
+        LOG_DEBUG("cow ext buf size is %lu",cow_ext_buf_size);
         int (*fiemap)(struct inode *, struct fiemap_extent_info *, u64 start, u64 len);
 
         int (*insert_vm_struct)(struct mm_struct *mm, struct vm_area_struct *vma) = (INSERT_VM_STRUCT_ADDR != 0) ?
@@ -1040,9 +1039,7 @@ int cow_get_file_extents(struct snap_device* dev, struct file* filp)
 	LOG_DEBUG("attempting page stealing from %s", get_task_comm(parent_process_name, task));
 
         dattobd_mm_lock(task->mm);
-        LOG_DEBUG("_after mm lock in %s", __func__);
         start_addr = get_unmapped_area(NULL, 0, cow_ext_buf_size, 0, VM_READ | VM_WRITE);
-         LOG_DEBUG("got start address %llu in %s",start_addr,  __func__);
         if (IS_ERR_VALUE(start_addr))
 		return start_addr; // returns -EPERM if failed
 
@@ -1094,7 +1091,6 @@ int cow_get_file_extents(struct snap_device* dev, struct file* filp)
         cow_ext_buf = (__user uint8_t *) start_addr;
         LOG_DEBUG("cow ext buffer prepared %p", cow_ext_buf);
 	if (filp->f_inode->i_op)
-LOG_DEBUG("preparing fiemap");
 		fiemap = filp->f_inode->i_op->fiemap;
 
         if (fiemap) {
@@ -1113,21 +1109,15 @@ LOG_DEBUG("preparing fiemap");
 				fiemap_info.fi_extents_mapped, fiemap_info.fi_extents_max);
 
 		if (!ret && fiemap_info.fi_extents_mapped > 0) {
-                         LOG_DEBUG("in if before kfree");
-                        // LOG_DEBUG("check dev->sd_cow_extents addr %p", dev->sd_cow_extents);
 			if (dev->sd_cow_extents) {
-                                LOG_DEBUG("dupa1"); 
                                 kfree(dev->sd_cow_extents);
-                                LOG_DEBUG("dupa2");  
                         }      
-                        LOG_DEBUG("passed kfree");  
 			fiemap_mapped_extents_size = fiemap_info.fi_extents_mapped * sizeof(struct fiemap_extent);
                         LOG_DEBUG("size preapred is %d", fiemap_mapped_extents_size);
 			dev->sd_cow_extents = kmalloc(fiemap_mapped_extents_size, GFP_KERNEL);
-                        LOG_DEBUG("dupa4");
 			if (dev->sd_cow_extents) {
                                 //TODO: closely watch
-                                LOG_DEBUG("closely watch cow extents"); 
+                                LOG_DEBUG("cow extents present");
 				ret = copy_from_user(dev->sd_cow_extents, cow_ext_buf, fiemap_mapped_extents_size);
 				if (!ret) {
 					dev->sd_cow_ext_cnt = fiemap_info.fi_extents_mapped;

@@ -1007,7 +1007,6 @@ struct vm_area_struct* dattobd_vm_area_allocate(struct mm_struct* mm)
 {
         struct vm_area_struct *vma;
         static const struct vm_operations_struct dummy_vm_ops = {};
-        LOG_DEBUG("ENTER %s", __func__);
 	if (!vm_area_cache) {
 		LOG_ERROR(-ENOTSUPP, "vm_area_cachep was not found");
 		return NULL;
@@ -1021,20 +1020,16 @@ struct vm_area_struct* dattobd_vm_area_allocate(struct mm_struct* mm)
 	vma->vm_mm = mm;
 	vma->vm_ops = &dummy_vm_ops;
 	INIT_LIST_HEAD(&vma->anon_vma_chain);
-        LOG_DEBUG("EXIT %s", __func__);
 	return vma;
 }
 
 void dattobd_vm_area_free(struct vm_area_struct *vma)
 {
-         LOG_DEBUG("ENTER %s", __func__);
         kmem_cache_free(*vm_area_cache, vma);
-         LOG_DEBUG("EXIT %s", __func__);
 }
 
 void dattobd_mm_lock(struct mm_struct* mm)
 {
-        LOG_DEBUG("ENTER %s", __func__);
 #ifdef HAVE_MMAP_WRITE_LOCK
 	mmap_write_lock(mm);
 #else
@@ -1044,7 +1039,6 @@ void dattobd_mm_lock(struct mm_struct* mm)
 
 void dattobd_mm_unlock(struct mm_struct* mm)
 {
-        LOG_DEBUG("ENTER %s", __func__);
 #ifdef HAVE_MMAP_WRITE_LOCK
 	mmap_write_unlock(mm);
 #else

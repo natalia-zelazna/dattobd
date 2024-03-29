@@ -8,12 +8,11 @@
  */
 void auto_transition_dormant(unsigned int minor)
 {
-        LOG_DEBUG("ENTER %s minor: %d", __func__, minor);
+        LOG_DEBUG("ENTER %s minor: %d, path %s", __func__, minor, snap_devices[minor]->sd_bdev_path);
 
         mutex_lock(&ioctl_mutex);
         __tracer_active_to_dormant(snap_devices[minor]);
         mutex_unlock(&ioctl_mutex);
-        
         LOG_DEBUG("EXIT %s", __func__);
 }
 
@@ -193,24 +192,18 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
                 lookup_flags |= LOOKUP_FOLLOW;
 
 // #ifdef HAVE_KERN_PATH
-//         ret = kern_path(dir_name, lookup_flags, &path);
+//         ret = kern_path(dir_nam9 e, lookup_flags, &path);
 //         LOG_DEBUG("kern path returned %d", ret);
 // #else 
         ret = user_path_at(0, dir_name, lookup_flags, &path);
-        LOG_DEBUG("used user path path returned %d", ret);
+        LOG_DEBUG("used user path  returned %d", ret);
 // #endif //kern path
 	if(ret){
 		//error finding path
-		goto out_no_path_put;
+		goto out;
 
         }
-        // LOG_DEBUG("1path->dentry: %p", path.dentry);
-        // LOG_DEBUG("2path->mnt->mnt_root: %p", path.mnt);
-        // LOG_DEBUG("3path->dentry name: %s, ", path.dentry->d_name.name);
-        // LOG_DEBUG(" 4path->mnt->mnt_root root: %p", path.mnt->mnt_root);
-        // LOG_DEBUG(" 5path->mnt->mnt_root name: %s", path.mnt->mnt_root->d_name.name);
-
-
+ 
         if (path.dentry != path.mnt->mnt_root) {
                 // path specified isn't a mount point
                 ret = -ENODEV;
@@ -239,10 +232,6 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
         return ret;
 out:
         path_put(&path);
-        *idx_out = 0;
-        return ret;
-out_no_path_put:
-        LOG_DEBUG("NZ out no path put %p", &path);
         *idx_out = 0;
         return ret;
 
