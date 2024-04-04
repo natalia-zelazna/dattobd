@@ -8,11 +8,12 @@
  */
 void auto_transition_dormant(unsigned int minor)
 {
-        LOG_DEBUG("ENTER %s minor: %d, path %s", __func__, minor, snap_devices[minor]->sd_bdev_path);
+        LOG_DEBUG("ENTER %s minor: %d", __func__, minor);
 
         mutex_lock(&ioctl_mutex);
         __tracer_active_to_dormant(snap_devices[minor]);
         mutex_unlock(&ioctl_mutex);
+        
         LOG_DEBUG("EXIT %s", __func__);
 }
 
@@ -60,7 +61,6 @@ int __handle_bdev_mount_nowrite(const struct vfsmount *mnt,
         int ret;
         unsigned int i;
         struct snap_device *dev;
-        LOG_DEBUG("NETER  %s", __func__);
         tracer_for_each(dev, i)
         {
                 if (!dev || !test_bit(ACTIVE, &dev->sd_state) ||
@@ -83,7 +83,6 @@ int __handle_bdev_mount_nowrite(const struct vfsmount *mnt,
         LOG_DEBUG("block device umount has not been detected for device");
 out:
         *idx_out = i;
-        LOG_DEBUG("EXIT OUT  %s", __func__);
         return ret;
 }
 
@@ -182,32 +181,26 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
 {
         int ret = 0; 
         int lookup_flags = 0; // init_umount LOOKUP_MOUNTPOINT;
-        struct path path = {};
+        struct path path;
         struct block_device *bdev;
-        
+
         LOG_DEBUG("ENTER %s", __func__);
-        LOG_DEBUG(" dir name passed is %s",dir_name);
 
         if (!(follow_flags & UMOUNT_NOFOLLOW))
                 lookup_flags |= LOOKUP_FOLLOW;
 
-// #ifdef HAVE_KERN_PATH
-//         ret = kern_path(dir_nam9 e, lookup_flags, &path);
-//         LOG_DEBUG("kern path returned %d", ret);
-// #else 
-        ret = user_path_at(0, dir_name, lookup_flags, &path);
-        LOG_DEBUG("used user path  returned %d", ret);
-// #endif //kern path
-	if(ret){
-		//error finding path
-		goto out;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,5,0)
+        ret = kern_path(dir_name, lookup_flags, &path);
+#else
+        ret = user_path_at(AT_FDCWD, dir_name, lookup_flags, &path);
+#endif //LINUX_VERSION_CODE
 
-        }
- 
+        LOG_DEBUG("path->dentry: %s, path->mnt->mnt_root: %s", path.dentry->d_name.name, path.mnt->mnt_root->d_name.name);
+
         if (path.dentry != path.mnt->mnt_root) {
                 // path specified isn't a mount point
                 ret = -ENODEV;
-             LOG_DEBUG("path specified isn't a mount point %s", dir_name);
+                LOG_DEBUG("path specified isn't a mount point %s", dir_name);
         
                 goto out;
         }
@@ -220,7 +213,7 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
         }
 
         if (!mount_writable)
-                ret = __handle_bdev_mount_nowrite(path.mnt, idx_out); //TU!!!!
+                ret = __handle_bdev_mount_nowrite(path.mnt, idx_out);
         else
                 ret = __handle_bdev_mount_writable(dir_name, bdev, idx_out);
         if (ret) {
@@ -228,15 +221,13 @@ int handle_bdev_mount_event(const char *dir_name, int follow_flags,
                 LOG_DEBUG("no block device found that matched an incremental %s", dir_name);
                 goto out;
         }
+
         path_put(&path);
-        LOG_DEBUG("EXIT  %s", __func__);
         return ret;
 out:
         path_put(&path);
         *idx_out = 0;
-        LOG_DEBUG("EXIT  from out %s", __func__);
         return ret;
-
 }
 
 /**
@@ -254,10 +245,10 @@ void post_umount_check(int dormant_ret, int umount_ret, unsigned int idx,
         struct snap_device *dev;
         struct super_block *sb;
 
-        LOG_DEBUG("ENTER %s with name %s", __func__, dir_name);
+        //LOG_DEBUG("ENTER %s", __func__);
         // if we didn't do anything or failed, just return
         if (dormant_ret){
-                LOG_DEBUG("dormant_ret");
+                //LOG_DEBUG("dormant_ret");
                 return;
         }
         dev = snap_devices[idx];
@@ -299,4 +290,5 @@ void post_umount_check(int dormant_ret, int umount_ret, unsigned int idx,
                 dattobd_drop_super(sb);
         }
 
+        LOG_DEBUG("EXIT %s", __func__);
 }
