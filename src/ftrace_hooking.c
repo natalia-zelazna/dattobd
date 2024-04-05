@@ -153,7 +153,6 @@ asmlinkage long ftrace_sys_mount(char __user *dev_name, char __user *dir_name,
         long sys_ret = 0;
         unsigned int idx = 0;
         unsigned long real_flags = flags;
-LOG_DEBUG("ENTER %s", __func__);
 
         // get rid of the magic value if its present
         if ((real_flags & MS_MGC_MSK) == MS_MGC_VAL)
